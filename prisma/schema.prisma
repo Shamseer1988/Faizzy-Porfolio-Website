@@ -1,0 +1,75 @@
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+}
+
+model Profile {
+  id               Int      @id @default(1)
+  fullName         String
+  displayFirst     String
+  displayHighlight String
+  displayLast      String
+  roles            String[]
+  bio              String
+  age              Int
+  className        String
+  school           String
+  house            String
+  youtubeUrl       String
+  youtubeHandle    String
+  statusTag        String
+  projectsCount    Int
+  updatedAt        DateTime @updatedAt
+}
+
+model Skill {
+  id      Int    @id @default(autoincrement())
+  name    String
+  percent Int
+  order   Int    @default(0)
+}
+
+model Hobby {
+  id    Int    @id @default(autoincrement())
+  label String
+  order Int    @default(0)
+}
+
+model Project {
+  id          Int      @id @default(autoincrement())
+  title       String
+  description String
+  icon        String
+  tag         String
+  accent      String   @default("cyan") // cyan | lime | amber
+  tools       String[]
+  order       Int      @default(0)
+  visible     Boolean  @default(true)
+}
+
+model FamilyMember {
+  id       Int    @id @default(autoincrement())
+  name     String
+  relation String
+  emoji    String
+  order    Int    @default(0)
+}
+
+model GalleryItem {
+  id      Int    @id @default(autoincrement())
+  src     String
+  caption String
+  order   Int    @default(0)
+}
+
+model Message {
+  id        Int      @id @default(autoincrement())
+  name      String
+  email     String
+  body      String
+  read      Boolean  @default(false)
+  createdAt DateTime @default(now())
+}
