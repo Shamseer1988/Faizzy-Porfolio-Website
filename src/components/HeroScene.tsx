@@ -203,7 +203,7 @@ export default function HeroScene({
                   transition={{ type: "spring", stiffness: 90, damping: 15, delay: 0.15 * i }}
                 >
                   <span
-                    className="hz-card-inner"
+                    className="hz-card-inner gold-ring"
                     style={reduce ? undefined : { animationDelay: `${slot.float}s` }}
                   >
                     <Image

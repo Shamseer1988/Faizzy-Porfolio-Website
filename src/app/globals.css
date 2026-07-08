@@ -2135,3 +2135,98 @@ body {
     display: none;
   }
 }
+
+/* ============ HERO-THEME FOR ALL SECTIONS ============ */
+/* gradient section titles matching the ZOHAN hero word */
+.sec-title {
+  background: linear-gradient(94deg, var(--text) 30%, var(--cyan) 75%, var(--lime) 105%);
+  -webkit-background-clip: text;
+  background-clip: text;
+  color: transparent;
+}
+
+/* alternating ambient spotlights behind every section */
+main section {
+  position: relative;
+}
+main section::before {
+  content: "";
+  position: absolute;
+  top: 6%;
+  right: -14%;
+  width: 52%;
+  height: 74%;
+  background: radial-gradient(ellipse at center, var(--cyan-soft) 0%, transparent 62%);
+  filter: blur(44px);
+  pointer-events: none;
+  z-index: -1;
+  animation: aurora-pulse 10s ease-in-out infinite alternate;
+}
+main section:nth-of-type(even)::before {
+  right: auto;
+  left: -14%;
+  background: radial-gradient(ellipse at center, var(--lime-soft) 0%, transparent 62%);
+}
+
+/* giant outlined watermark word behind section headers */
+.sec-mark {
+  position: absolute;
+  top: 28px;
+  right: 0;
+  font-family: "Fredoka";
+  font-weight: 700;
+  font-size: clamp(64px, 10vw, 150px);
+  line-height: 1;
+  letter-spacing: 0.05em;
+  color: transparent;
+  -webkit-text-stroke: 2px var(--stroke-2);
+  opacity: 0.5;
+  pointer-events: none;
+  user-select: none;
+  z-index: 0;
+}
+@media (max-width: 720px) {
+  .sec-mark {
+    font-size: 52px;
+    top: 44px;
+  }
+}
+
+/* ============ GOLDEN REFLECTIVE IMAGE BORDERS ============ */
+.gold-ring {
+  position: relative;
+}
+.gold-ring::before {
+  content: "";
+  position: absolute;
+  inset: 0;
+  border-radius: inherit;
+  padding: 2.5px;
+  background: linear-gradient(
+    115deg,
+    #8a5a14 0%,
+    #f6c453 18%,
+    #fff3c4 32%,
+    #c88a1c 48%,
+    #f9d97b 64%,
+    #8a5a14 82%,
+    #f6c453 100%
+  );
+  background-size: 300% 300%;
+  animation: gold-sheen 6s ease-in-out infinite;
+  -webkit-mask: linear-gradient(#fff 0 0) content-box, linear-gradient(#fff 0 0);
+  -webkit-mask-composite: xor;
+  mask: linear-gradient(#fff 0 0) content-box, linear-gradient(#fff 0 0);
+  mask-composite: exclude;
+  pointer-events: none;
+  z-index: 6;
+}
+@keyframes gold-sheen {
+  0%,
+  100% {
+    background-position: 0% 30%;
+  }
+  50% {
+    background-position: 100% 70%;
+  }
+}

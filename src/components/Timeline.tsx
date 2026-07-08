@@ -93,7 +93,7 @@ export default function Timeline({ milestones }: { milestones: MilestoneContent[
               return (
                 <motion.div
                   key={ms.id}
-                  className="jd-card"
+                  className="jd-card gold-ring"
                   style={{ zIndex: n - Math.abs(off) }}
                   initial={false}
                   animate={

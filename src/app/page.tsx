@@ -90,6 +90,7 @@ export default async function Home() {
 
         {/* ABOUT */}
         <section id="about">
+          <span className="sec-mark" aria-hidden="true">ABOUT</span>
           <p className="sec-eyebrow rv">{"// about me"}</p>
           <h2 className="sec-title rv">Player one, ready</h2>
           <p className="sec-sub rv">
@@ -134,6 +135,7 @@ export default async function Home() {
 
         {/* LIFE TIMELINE — dynamic milestones from the admin backend */}
         <section id="journey">
+          <span className="sec-mark" aria-hidden="true">JOURNEY</span>
           <p className="sec-eyebrow rv">{"// my journey"}</p>
           <h2 className="sec-title rv">Born to build</h2>
           <p className="sec-sub rv">
@@ -145,6 +147,7 @@ export default async function Home() {
 
         {/* SKILLS */}
         <section id="skills">
+          <span className="sec-mark" aria-hidden="true">SKILLS</span>
           <p className="sec-eyebrow rv">{"// skills"}</p>
           <h2 className="sec-title rv">Maker lab &amp; play mode</h2>
           <p className="sec-sub rv">
@@ -184,6 +187,7 @@ export default async function Home() {
 
         {/* PROJECTS */}
         <section id="projects">
+          <span className="sec-mark" aria-hidden="true">BUILDS</span>
           <p className="sec-eyebrow rv">{"// projects"}</p>
           <h2 className="sec-title rv">Things I&apos;m building</h2>
           <p className="sec-sub rv">
@@ -208,6 +212,7 @@ export default async function Home() {
 
         {/* YOUTUBE */}
         <section id="youtube">
+          <span className="sec-mark" aria-hidden="true">FAIZZY</span>
           <p className="sec-eyebrow rv" style={{ color: "var(--yt)" }}>
             {"// creator zone"}
           </p>
@@ -239,12 +244,13 @@ export default async function Home() {
 
         {/* FAMILY */}
         <section id="family">
+          <span className="sec-mark" aria-hidden="true">CREW</span>
           <p className="sec-eyebrow rv">{"// my crew"}</p>
           <h2 className="sec-title rv">Team Sidra House</h2>
           <p className="sec-sub rv">Every maker needs a crew. Mine lives with me.</p>
           <div className="family-grid">
             <Parallax amount={26}>
-              <figure className="family-photo rv" style={{ height: "100%" }}>
+              <figure className="family-photo gold-ring rv" style={{ height: "100%" }}>
                 <Image
                   src="/images/family.jpg"
                   alt="Zohan with his sister Amina Zahra and brother Nooh"
@@ -270,13 +276,14 @@ export default async function Home() {
 
         {/* GALLERY */}
         <section id="gallery">
+          <span className="sec-mark" aria-hidden="true">2014</span>
           <p className="sec-eyebrow rv">{"// throwback"}</p>
           <h2 className="sec-title rv">Loading… since 2014</h2>
           <p className="sec-sub rv">Proof that the need for speed started early.</p>
           <div className="gal">
             {gallery.map((g, i) => (
               <Parallax amount={i % 2 ? 46 : 22} key={g.id}>
-                <figure className={`pola rv${i % 2 ? " d1" : ""}`}>
+                <figure className={`pola gold-ring rv${i % 2 ? " d1" : ""}`}>
                   <Image src={g.src} alt={g.caption} width={800} height={1000} />
                   <figcaption>{g.caption}</figcaption>
                 </figure>
@@ -287,6 +294,7 @@ export default async function Home() {
 
         {/* CONTACT */}
         <section id="contact">
+          <span className="sec-mark" aria-hidden="true">HELLO</span>
           <p className="sec-eyebrow rv">{"// contact"}</p>
           <h2 className="sec-title rv">Send a message to mission control</h2>
           <p className="sec-sub rv">

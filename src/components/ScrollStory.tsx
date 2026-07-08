@@ -96,7 +96,7 @@ export default function ScrollStory({ chapters }: { chapters: StoryChapter[] }) 
       <div className="story-static">
         {chapters.map((c) => (
           <div className="story-static-row" key={c.title}>
-            <div className="story-img on" style={{ position: "relative" }}>
+            <div className="story-img gold-ring on" style={{ position: "relative" }}>
               <Image
                 src={c.src}
                 alt={c.alt}
@@ -229,7 +229,7 @@ export default function ScrollStory({ chapters }: { chapters: StoryChapter[] }) 
                 return (
                   <motion.div
                     key={c.src}
-                    className="story-img"
+                    className="story-img gold-ring"
                     style={{ zIndex: n - Math.abs(rel) }}
                     initial={false}
                     animate={
