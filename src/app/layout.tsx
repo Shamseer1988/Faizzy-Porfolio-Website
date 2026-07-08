@@ -7,6 +7,7 @@ import "@fontsource/plus-jakarta-sans/600.css";
 import "@fontsource/plus-jakarta-sans/700.css";
 import "@fontsource/plus-jakarta-sans/800.css";
 import "./globals.css";
+import CursorFx from "@/components/CursorFx";
 
 const siteUrl = process.env.NEXT_PUBLIC_SITE_URL ?? "http://localhost:3000";
 
@@ -63,6 +64,7 @@ export default function RootLayout({
           <div className="blob blob-2" />
           <div className="blob blob-3" />
         </div>
+        <CursorFx />
         {children}
       </body>
     </html>

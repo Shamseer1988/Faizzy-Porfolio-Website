@@ -39,10 +39,10 @@ function mulberry32(seed: number) {
 }
 
 const CARD_SLOTS = [
-  { top: "24%", right: "7%", w: 290, rot: 4, depth: 34, z: 4, float: 0 },
-  { top: "10%", left: "5%", w: 185, rot: -7, depth: 20, z: 3, float: 1.1 },
-  { top: "56%", right: "31%", w: 155, rot: 6, depth: 14, z: 1, float: 2.2 },
-  { top: "12%", left: "33%", w: 150, rot: -4, depth: 26, z: 1, float: 0.6 },
+  { top: "22%", right: "4%", w: 300, rot: 4, depth: 34, z: 4, float: 0 },
+  { top: "9%", left: "2%", w: 195, rot: -7, depth: 20, z: 3, float: 1.1 },
+  { top: "52%", right: "27%", w: 165, rot: 6, depth: 14, z: 1, float: 2.2 },
+  { top: "11%", left: "26%", w: 150, rot: -4, depth: 26, z: 1, float: 0.6 },
 ];
 
 function Layer({
@@ -156,86 +156,115 @@ export default function HeroScene({
         <span className="hz-cloud c1" />
         <span className="hz-cloud c2" />
         <span className="hz-cloud c3" />
+        <span className="hz-aurora" />
+        <span className="hz-shoot s1" />
+        <span className="hz-shoot s2" />
+        <span className="hz-shoot s3" />
       </motion.div>
 
-      {/* giant word */}
-      <motion.div
-        key={wordKey}
-        className="hz-word"
-        style={reduce ? undefined : { y: yWord, opacity: wordOpacity }}
-        aria-hidden="true"
-      >
-        {/* gradient + background-clip must live on the SAME element as the
-            mouse-parallax transform, or Chromium drops the text paint */}
-        <Layer mx={mx} my={my} depth={10} className="hz-word-text">
-          {bigWord.toUpperCase()}
-        </Layer>
-      </motion.div>
+      {/* composition container: keeps word/cards/copy related on wide screens */}
+      <div className="hz-inner">
+        {/* giant word */}
+        <motion.div
+          key={wordKey}
+          className="hz-word"
+          style={reduce ? undefined : { y: yWord, opacity: wordOpacity }}
+          aria-hidden="true"
+        >
+          {/* gradient + background-clip must live on the SAME element as the
+              mouse-parallax transform, or Chromium drops the text paint */}
+          <Layer mx={mx} my={my} depth={10} className="hz-word-text">
+            {bigWord.toUpperCase()}
+          </Layer>
+        </motion.div>
 
-      {/* floating photo cards */}
-      {slots.map((slot, i) => {
-        const card = cards[i];
-        return (
-          <motion.div
-            key={card.src + i}
-            className={`hz-cardpos hz-slot-${i}`}
-            style={{
-              top: slot.top,
-              left: slot.left,
-              right: slot.right,
-              width: slot.w,
-              zIndex: slot.z,
-              y: reduce ? undefined : slot.depth > 24 ? yCardsFast : yCardsSlow,
-            }}
-          >
-            <Layer mx={mx} my={my} depth={slot.depth}>
-              <motion.figure
-                className="hz-card"
-                style={{ rotate: slot.rot }}
-                initial={reduce ? false : { opacity: 0, y: 60, scale: 0.85 }}
-                animate={{ opacity: 1, y: 0, scale: 1 }}
-                transition={{ type: "spring", stiffness: 90, damping: 15, delay: 0.15 * i }}
-              >
-                <span
-                  className="hz-card-inner"
-                  style={reduce ? undefined : { animationDelay: `${slot.float}s` }}
+        {/* floating photo cards */}
+        {slots.map((slot, i) => {
+          const card = cards[i];
+          return (
+            <motion.div
+              key={card.src + i}
+              className={`hz-cardpos hz-slot-${i}`}
+              style={{
+                top: slot.top,
+                left: slot.left,
+                right: slot.right,
+                width: slot.w,
+                zIndex: slot.z,
+                y: reduce ? undefined : slot.depth > 24 ? yCardsFast : yCardsSlow,
+              }}
+            >
+              <Layer mx={mx} my={my} depth={slot.depth}>
+                <motion.figure
+                  className="hz-card"
+                  style={{ rotate: slot.rot }}
+                  initial={reduce ? false : { opacity: 0, y: 60, scale: 0.85 }}
+                  animate={{ opacity: 1, y: 0, scale: 1 }}
+                  transition={{ type: "spring", stiffness: 90, damping: 15, delay: 0.15 * i }}
                 >
-                  <Image
-                    src={card.src}
-                    alt={card.caption}
-                    width={slot.w}
-                    height={Math.round(slot.w * 1.2)}
-                    priority={i === 0}
-                  />
-                  <figcaption>{card.caption}</figcaption>
-                </span>
-              </motion.figure>
-            </Layer>
-          </motion.div>
-        );
-      })}
+                  <span
+                    className="hz-card-inner"
+                    style={reduce ? undefined : { animationDelay: `${slot.float}s` }}
+                  >
+                    <Image
+                      src={card.src}
+                      alt={card.caption}
+                      width={slot.w}
+                      height={Math.round(slot.w * 1.2)}
+                      priority={i === 0}
+                    />
+                    <figcaption>{card.caption}</figcaption>
+                  </span>
+                </motion.figure>
+              </Layer>
+            </motion.div>
+          );
+        })}
 
-      {/* copy block */}
-      <motion.div className="hz-copy" style={reduce ? undefined : { y: yCopy }}>
-        <span className="eyebrow">
-          <span className="dot" />
-          Hello world — I&apos;m building things
-        </span>
-        <h1>{fullName}</h1>
-        <RoleRotator roles={roles} />
-        <p>
-          {age}-year-old maker from <b>{house}</b> · Class {className}, {school}. Status:{" "}
-          <b style={{ color: "var(--lime)" }}>{statusTag}</b>
-        </p>
-        <div className="cta-row">
-          <a className="btn btn-primary" href="/resume" target="_blank">
-            ⬇ Download Resume
-          </a>
-          <a className="btn btn-ghost" href="#contact">
-            👋 Say Hello
-          </a>
-        </div>
-      </motion.div>
+        {/* cute midfield stickers */}
+        {[
+          { e: "🤖", left: "48%", top: "52%", depth: 24, size: 40, delay: 0.4 },
+          { e: "🚀", left: "31%", top: "42%", depth: 16, size: 32, delay: 1.4 },
+          { e: "✨", left: "60%", top: "40%", depth: 30, size: 26, delay: 2.2 },
+        ].map((s) => (
+          <div
+            key={s.e}
+            className="hz-sticker"
+            style={{ left: s.left, top: s.top, fontSize: s.size }}
+          >
+            <Layer mx={mx} my={my} depth={s.depth}>
+              <span
+                className="hz-sticker-inner"
+                style={reduce ? undefined : { animationDelay: `${s.delay}s` }}
+              >
+                {s.e}
+              </span>
+            </Layer>
+          </div>
+        ))}
+
+        {/* copy block */}
+        <motion.div className="hz-copy" style={reduce ? undefined : { y: yCopy }}>
+          <span className="eyebrow">
+            <span className="dot" />
+            Hello world — I&apos;m building things
+          </span>
+          <h1>{fullName}</h1>
+          <RoleRotator roles={roles} />
+          <p>
+            {age}-year-old maker from <b>{house}</b> · Class {className}, {school}. Status:{" "}
+            <b style={{ color: "var(--lime)" }}>{statusTag}</b>
+          </p>
+          <div className="cta-row">
+            <a className="btn btn-primary" href="/resume" target="_blank">
+              ⬇ Download Resume
+            </a>
+            <a className="btn btn-ghost" href="#contact">
+              👋 Say Hello
+            </a>
+          </div>
+        </motion.div>
+      </div>
 
       {/* foreground hills */}
       <div className="hz-hills" aria-hidden="true">

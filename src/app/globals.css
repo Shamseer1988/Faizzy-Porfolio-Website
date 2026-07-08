@@ -1686,9 +1686,15 @@ body {
     transform: translateX(120vw);
   }
 }
+.hz-inner {
+  position: absolute;
+  inset: 0;
+  max-width: 1560px;
+  margin: 0 auto;
+}
 .hz-word {
   position: absolute;
-  top: 13vh;
+  top: 14vh;
   left: 0;
   right: 0;
   text-align: center;
@@ -1763,8 +1769,8 @@ body {
 }
 .hz-copy {
   position: absolute;
-  left: max(24px, 6vw);
-  bottom: 16vh;
+  left: max(24px, 4vw);
+  bottom: 15vh;
   z-index: 6;
   max-width: 520px;
 }
@@ -1882,5 +1888,152 @@ body {
   .hz-ball {
     right: 6%;
     font-size: 24px;
+  }
+}
+
+/* hero extras: aurora, shooting stars, stickers */
+.hz-aurora {
+  position: absolute;
+  left: 8%;
+  right: 8%;
+  top: 4%;
+  height: 46%;
+  background: linear-gradient(100deg, var(--cyan-soft), var(--lime-soft) 45%, var(--amber-soft));
+  filter: blur(70px);
+  border-radius: 50%;
+  opacity: 0.8;
+  animation: aurora-pulse 9s ease-in-out infinite alternate;
+}
+@keyframes aurora-pulse {
+  from {
+    transform: translateY(0) scaleX(1);
+    opacity: 0.55;
+  }
+  to {
+    transform: translateY(24px) scaleX(1.12);
+    opacity: 0.95;
+  }
+}
+.hz-shoot {
+  position: absolute;
+  width: 130px;
+  height: 2px;
+  background: linear-gradient(90deg, #fff, transparent);
+  border-radius: 99px;
+  opacity: 0;
+  transform: rotate(-32deg);
+  animation: shoot 7s linear infinite;
+}
+.hz-shoot.s1 {
+  top: 14%;
+  left: 66%;
+  animation-delay: 2s;
+}
+.hz-shoot.s2 {
+  top: 8%;
+  left: 28%;
+  animation-delay: 5.4s;
+  width: 90px;
+}
+.hz-shoot.s3 {
+  top: 30%;
+  left: 82%;
+  animation-delay: 8.8s;
+  animation-duration: 9s;
+}
+@keyframes shoot {
+  0%,
+  92% {
+    opacity: 0;
+    transform: rotate(-32deg) translateX(0);
+  }
+  94% {
+    opacity: calc(var(--hz-stars) * 0.9);
+  }
+  100% {
+    opacity: 0;
+    transform: rotate(-32deg) translateX(-260px);
+  }
+}
+.hz-sticker {
+  position: absolute;
+  z-index: 1;
+  pointer-events: none;
+  filter: drop-shadow(0 8px 18px rgba(2, 8, 28, 0.4));
+}
+.hz-sticker-inner {
+  display: inline-block;
+  animation: hz-float 5.4s ease-in-out infinite;
+}
+@media (max-width: 900px) {
+  .hz-sticker {
+    display: none;
+  }
+}
+
+/* ============ CURSOR FX ============ */
+.cursor-layer {
+  position: fixed;
+  inset: 0;
+  z-index: 90;
+  pointer-events: none;
+}
+.cursor-dot {
+  position: fixed;
+  top: -4px;
+  left: -4px;
+  width: 8px;
+  height: 8px;
+  border-radius: 50%;
+  background: var(--cyan);
+  box-shadow: 0 0 12px var(--cyan), 0 0 26px var(--cyan-soft);
+}
+.cursor-ring {
+  position: fixed;
+  top: -19px;
+  left: -19px;
+  width: 38px;
+  height: 38px;
+  border-radius: 50%;
+  border: 1.5px solid var(--cyan);
+  background: radial-gradient(circle, transparent 55%, var(--cyan-soft));
+}
+.cursor-burst {
+  position: fixed;
+  width: 0;
+  height: 0;
+}
+.cursor-burst i {
+  position: absolute;
+  width: 7px;
+  height: 7px;
+  border-radius: 50%;
+  background: linear-gradient(135deg, var(--cyan), var(--lime));
+  box-shadow: 0 0 10px var(--cyan);
+}
+
+/* mid-size screens: shrink the hero composition so word and cards breathe */
+@media (min-width: 901px) and (max-width: 1240px) {
+  .hz-word-text {
+    font-size: clamp(72px, 13vw, 160px);
+  }
+  .hz-word {
+    top: 17vh;
+  }
+  .hz-cardpos.hz-slot-0 {
+    width: 235px !important;
+    top: 20% !important;
+    right: 3% !important;
+  }
+  .hz-cardpos.hz-slot-1 {
+    width: 158px !important;
+  }
+  .hz-cardpos.hz-slot-2 {
+    width: 138px !important;
+    top: 58% !important;
+    right: 16% !important;
+  }
+  .hz-cardpos.hz-slot-3 {
+    display: none;
   }
 }
