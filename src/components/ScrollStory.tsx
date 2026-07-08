@@ -215,13 +215,23 @@ export default function ScrollStory({ chapters }: { chapters: StoryChapter[] }) 
           {/* right: 3D card carousel with hover tilt + glare */}
           <div
             className="story-stage"
+            style={{ height: "var(--story-stage-height, min(66vh, 600px))" }}
             onMouseMove={onStageMove}
             onMouseEnter={() => setHovering(true)}
             onMouseLeave={onStageLeave}
           >
             <motion.div
               className="story-stage-tilt"
-              style={{ rotateX: tiltX, rotateY: tiltY, scale: hovering ? 1.03 : 1 }}
+              style={{
+                position: "absolute",
+                top: 0,
+                left: 0,
+                width: "100%",
+                height: "100%",
+                rotateX: tiltX,
+                rotateY: tiltY,
+                scale: hovering ? 1.03 : 1,
+              }}
             >
               {chapters.map((c, i) => {
                 const rel = i - active;
@@ -230,7 +240,14 @@ export default function ScrollStory({ chapters }: { chapters: StoryChapter[] }) 
                   <motion.div
                     key={c.src}
                     className="story-img gold-ring"
-                    style={{ zIndex: n - Math.abs(rel) }}
+                    style={{
+                      position: "absolute",
+                      top: 0,
+                      left: 0,
+                      width: "100%",
+                      height: "100%",
+                      zIndex: n - Math.abs(rel),
+                    }}
                     initial={false}
                     animate={
                       rel < 0

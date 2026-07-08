@@ -114,8 +114,10 @@ export default function Timeline({ milestones }: { milestones: MilestoneContent[
                       <Image
                         src={ms.image}
                         alt={ms.title}
-                        fill
+                        width={400}
+                        height={300}
                         sizes="(max-width: 820px) 80vw, 420px"
+                        style={{ width: "100%", height: "100%" }}
                       />
                     </div>
                   ) : (
