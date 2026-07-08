@@ -1,14 +1,12 @@
 import Image from "next/image";
 import Nav from "@/components/Nav";
 import Marquee from "@/components/Marquee";
-import TiltCard from "@/components/TiltCard";
-import RoleRotator from "@/components/RoleRotator";
+import HeroScene, { type HeroCardData } from "@/components/HeroScene";
 import RevealInit from "@/components/RevealInit";
 import LiveClock from "@/components/LiveClock";
 import ContactForm from "@/components/ContactForm";
 import SmoothScroll from "@/components/SmoothScroll";
 import ScrollProgress from "@/components/ScrollProgress";
-import HeroFx from "@/components/HeroFx";
 import Parallax from "@/components/Parallax";
 import ScrollStory, { type StoryChapter } from "@/components/ScrollStory";
 import Timeline from "@/components/Timeline";
@@ -59,6 +57,13 @@ export default async function Home() {
   const { profile, skills, hobbies, projects, family, gallery, milestones } =
     await getSiteContent();
 
+  // Hero floating cards: his portrait + gallery photos (both editable from
+  // the admin panel — swap gallery items to change the hero scene).
+  const heroCards: HeroCardData[] = [
+    { src: "/images/hero.jpg", caption: "That's me ✌" },
+    ...gallery.slice(0, 3).map((g) => ({ src: g.src, caption: g.caption })),
+  ].slice(0, 4);
+
   return (
     <>
       <RevealInit />
@@ -66,79 +71,18 @@ export default async function Home() {
       <ScrollProgress />
       <FloatingFx />
       <Nav />
-      <main className="wrap" id="top">
-        {/* HERO */}
-        <HeroFx
-          left={
-            <div>
-            <span className="eyebrow rv in">
-              <span className="dot" />
-              Hello world — I&apos;m building things
-            </span>
-            <h1>
-              {profile.displayFirst} <span className="grad">{profile.displayHighlight}</span>{" "}
-              {profile.displayLast}
-            </h1>
-            <RoleRotator roles={profile.roles} />
-            <p className="hero-sub">
-              {profile.age}-year-old maker from <b>{profile.house}</b> — Class{" "}
-              {profile.className} at <b>{profile.school}</b>. I build <b>AI robots</b>, run
-              our <b>smart home</b>, score goals ⚽ and make videos for my channel{" "}
-              <b>Faizzy World</b>.
-            </p>
-            <div className="cta-row">
-              <a className="btn btn-primary" href="/resume" target="_blank">
-                ⬇ Download Resume
-              </a>
-              <a className="btn btn-ghost" href="#contact">
-                👋 Say Hello
-              </a>
-            </div>
-            <div className="stat-row">
-              <div className="stat">
-                <b data-count={profile.age}>0</b>
-                <span>Years old</span>
-              </div>
-              <div className="stat">
-                <b>
-                  {profile.className}
-                  <i style={{ fontStyle: "normal", fontSize: 14 }}>th</i>
-                </b>
-                <span>Class</span>
-              </div>
-              <div className="stat">
-                <b data-count={profile.projectsCount}>0</b>
-                <span>Projects</span>
-              </div>
-              <div className="stat">
-                <b>∞</b>
-                <span>Ideas</span>
-              </div>
-            </div>
-          </div>
-          }
-          right={
-            <TiltCard>
-              <figure className="photo-frame">
-                <Image
-                  src="/images/hero.jpg"
-                  alt={`${profile.fullName} sitting on a designer chair in his circuit-board t-shirt`}
-                  width={747}
-                  height={1280}
-                  priority
-                />
-              </figure>
-              <span className="orbit o1">⚽</span>
-              <span className="orbit o2">🤖</span>
-              <span className="orbit o3">🛹</span>
-              <span className="orbit o4">💡</span>
-              <span className="hero-tag">
-                ⚡ Status: <span className="lv">{profile.statusTag}</span>
-              </span>
-            </TiltCard>
-          }
-        />
-
+      <HeroScene
+        bigWord={profile.displayHighlight}
+        fullName={profile.fullName}
+        roles={profile.roles}
+        house={profile.house}
+        school={profile.school.split(",")[0]}
+        className={profile.className}
+        age={profile.age}
+        statusTag={profile.statusTag}
+        cards={heroCards}
+      />
+      <main className="wrap">
         <Marquee />
 
         {/* SCROLL STORY — pinned chapters, images & copy swap with scroll */}

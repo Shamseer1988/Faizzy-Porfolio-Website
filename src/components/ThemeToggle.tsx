@@ -24,6 +24,9 @@ export default function ThemeToggle() {
       localStorage.setItem("zohan-theme", next);
     } catch {}
     setTheme(next);
+    // Lets decorative components re-render gradient-clipped text, which
+    // some browsers fail to repaint after CSS variables change.
+    window.dispatchEvent(new CustomEvent("zohan-themechange"));
   }
 
   return (
