@@ -200,8 +200,8 @@ export default async function Home() {
           <p className="sec-eyebrow rv">{"// my journey"}</p>
           <h2 className="sec-title rv">Born to build</h2>
           <p className="sec-sub rv">
-            From first steps to first automations — the whole adventure so far. (Baba adds
-            new chapters from the admin panel as they happen.)
+            Keep scrolling — the deck flips through the years, from first steps to first
+            automations. (Baba adds new chapters from the admin panel as they happen.)
           </p>
           <Timeline milestones={milestones} />
         </section>
