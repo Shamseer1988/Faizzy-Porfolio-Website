@@ -6,11 +6,52 @@ import RoleRotator from "@/components/RoleRotator";
 import RevealInit from "@/components/RevealInit";
 import LiveClock from "@/components/LiveClock";
 import ContactForm from "@/components/ContactForm";
+import SmoothScroll from "@/components/SmoothScroll";
+import ScrollProgress from "@/components/ScrollProgress";
+import HeroFx from "@/components/HeroFx";
+import Parallax from "@/components/Parallax";
+import ScrollStory, { type StoryChapter } from "@/components/ScrollStory";
 import { getSiteContent } from "@/lib/content";
 
 export const revalidate = 60;
 
 const famAccents = ["", "lime", "amber", ""];
+
+const storyChapters: StoryChapter[] = [
+  {
+    src: "/images/hero.jpg",
+    alt: "Zohan in his circuit-board t-shirt",
+    eyebrow: "chapter 01 · the builder",
+    title: "Code, robots & a smart home",
+    text: "Most kids watch the future — I build it. AI robot experiments, automations that run Sidra House with Home Assistant and Tuya, and apps made side-by-side with Baba.",
+    chips: ["🤖 AI Robots", "🏠 Home Assistant", "🔌 Tuya", "💻 Next.js"],
+  },
+  {
+    src: "/images/scooter.jpg",
+    alt: "Young Zohan riding his green scooter",
+    eyebrow: "chapter 02 · speed mode",
+    title: "On wheels since day one",
+    text: "Before the keyboard there were wheels. Scooters, skates, cycles — if it rolls, I ride it. Top speed is a work in progress; the grin is permanent.",
+    chips: ["🛹 Skating", "🚴 Cycling", "⚡ Full speed"],
+  },
+  {
+    src: "/images/awesome.jpg",
+    alt: "Young Zohan in his Awesome Bro t-shirt",
+    eyebrow: "chapter 03 · game on",
+    title: "Certified awesome bro",
+    text: "Football every evening, legends on the wall, friends on speed dial. One day my robot will take penalty kicks — until then, I take them myself.",
+    chips: ["⚽ Football", "🌟 Big-league dreams", "🎈 Friends"],
+  },
+  {
+    src: "/images/family.jpg",
+    alt: "Zohan with his sister Amina Zahra and brother Nooh",
+    eyebrow: "chapter 04 · the crew",
+    title: "Team Sidra House",
+    text: "Every maker needs a crew. Amina runs the style department, Nooh assists in the lab, Umma runs everything, and Baba is the coach behind every project.",
+    chips: ["👧 Amina Zahra", "👦 Nooh", "👨‍💻 Baba", "👩 Umma"],
+    focus: "68% 22%",
+  },
+];
 
 export default async function Home() {
   const { profile, skills, hobbies, projects, family, gallery } =
@@ -19,11 +60,14 @@ export default async function Home() {
   return (
     <>
       <RevealInit />
+      <SmoothScroll />
+      <ScrollProgress />
       <Nav />
       <main className="wrap" id="top">
         {/* HERO */}
-        <header className="hero">
-          <div>
+        <HeroFx
+          left={
+            <div>
             <span className="eyebrow rv in">
               <span className="dot" />
               Hello world — I&apos;m building things
@@ -69,27 +113,40 @@ export default async function Home() {
               </div>
             </div>
           </div>
-          <TiltCard>
-            <figure className="photo-frame">
-              <Image
-                src="/images/hero.jpg"
-                alt={`${profile.fullName} sitting on a designer chair in his circuit-board t-shirt`}
-                width={747}
-                height={1280}
-                priority
-              />
-            </figure>
-            <span className="orbit o1">⚽</span>
-            <span className="orbit o2">🤖</span>
-            <span className="orbit o3">🛹</span>
-            <span className="orbit o4">💡</span>
-            <span className="hero-tag">
-              ⚡ Status: <span className="lv">{profile.statusTag}</span>
-            </span>
-          </TiltCard>
-        </header>
+          }
+          right={
+            <TiltCard>
+              <figure className="photo-frame">
+                <Image
+                  src="/images/hero.jpg"
+                  alt={`${profile.fullName} sitting on a designer chair in his circuit-board t-shirt`}
+                  width={747}
+                  height={1280}
+                  priority
+                />
+              </figure>
+              <span className="orbit o1">⚽</span>
+              <span className="orbit o2">🤖</span>
+              <span className="orbit o3">🛹</span>
+              <span className="orbit o4">💡</span>
+              <span className="hero-tag">
+                ⚡ Status: <span className="lv">{profile.statusTag}</span>
+              </span>
+            </TiltCard>
+          }
+        />
 
         <Marquee />
+
+        {/* SCROLL STORY — pinned chapters, images & copy swap with scroll */}
+        <section id="story" style={{ paddingBottom: 0 }}>
+          <p className="sec-eyebrow rv">{"// my story"}</p>
+          <h2 className="sec-title rv">Scroll through my world</h2>
+          <p className="sec-sub rv">
+            Keep scrolling — the pictures and the story move with you.
+          </p>
+        </section>
+        <ScrollStory chapters={storyChapters} />
 
         {/* ABOUT */}
         <section id="about">
@@ -235,15 +292,17 @@ export default async function Home() {
           <h2 className="sec-title rv">Team Sidra House</h2>
           <p className="sec-sub rv">Every maker needs a crew. Mine lives with me.</p>
           <div className="family-grid">
-            <figure className="family-photo rv">
-              <Image
-                src="/images/family.jpg"
-                alt="Zohan with his sister Amina Zahra and brother Nooh"
-                width={747}
-                height={560}
-              />
-              <figcaption>Amina · Nooh · Zohan — squad complete ✔</figcaption>
-            </figure>
+            <Parallax amount={26}>
+              <figure className="family-photo rv" style={{ height: "100%" }}>
+                <Image
+                  src="/images/family.jpg"
+                  alt="Zohan with his sister Amina Zahra and brother Nooh"
+                  width={747}
+                  height={560}
+                />
+                <figcaption>Amina · Nooh · Zohan — squad complete ✔</figcaption>
+              </figure>
+            </Parallax>
             <div className="fam-list">
               {family.map((f, i) => (
                 <div className={`card fam-item rv${i ? ` d${Math.min(i, 3)}` : ""}`} key={f.id}>
@@ -265,10 +324,12 @@ export default async function Home() {
           <p className="sec-sub rv">Proof that the need for speed started early.</p>
           <div className="gal">
             {gallery.map((g, i) => (
-              <figure className={`pola rv${i % 2 ? " d1" : ""}`} key={g.id}>
-                <Image src={g.src} alt={g.caption} width={800} height={1000} />
-                <figcaption>{g.caption}</figcaption>
-              </figure>
+              <Parallax amount={i % 2 ? 46 : 22} key={g.id}>
+                <figure className={`pola rv${i % 2 ? " d1" : ""}`}>
+                  <Image src={g.src} alt={g.caption} width={800} height={1000} />
+                  <figcaption>{g.caption}</figcaption>
+                </figure>
+              </Parallax>
             ))}
           </div>
         </section>
