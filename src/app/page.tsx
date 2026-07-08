@@ -85,14 +85,7 @@ export default async function Home() {
       <main className="wrap">
         <Marquee />
 
-        {/* SCROLL STORY — pinned chapters, images & copy swap with scroll */}
-        <section id="story" style={{ paddingBottom: 0 }}>
-          <p className="sec-eyebrow rv">{"// my story"}</p>
-          <h2 className="sec-title rv">Scroll through my world</h2>
-          <p className="sec-sub rv">
-            Keep scrolling — the pictures and the story move with you.
-          </p>
-        </section>
+        {/* SCROLL STORY — pinned chapters, 3D image carousel, flying football */}
         <ScrollStory chapters={storyChapters} />
 
         {/* ABOUT */}
