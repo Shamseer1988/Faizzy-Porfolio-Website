@@ -11,6 +11,7 @@ export default function AdminLayout({ children }: { children: React.ReactNode })
         <Link href="/admin/profile">👤 Profile</Link>
         <Link href="/admin/skills">🔧 Skills &amp; Hobbies</Link>
         <Link href="/admin/projects">🚀 Projects</Link>
+        <Link href="/admin/timeline">🕰 Timeline</Link>
         <Link href="/admin/family">👨‍👩‍👧‍👦 Family &amp; Gallery</Link>
         <Link href="/admin/messages">📬 Messages</Link>
         <Link href="/" target="_blank">

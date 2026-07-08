@@ -33,6 +33,15 @@ export type ProjectContent = {
 };
 export type FamilyMemberContent = { id: number; name: string; relation: string; emoji: string; order: number };
 export type GalleryItemContent = { id: number; src: string; caption: string; order: number };
+export type MilestoneContent = {
+  id: number;
+  year: string;
+  title: string;
+  story: string;
+  icon: string;
+  image: string | null;
+  order: number;
+};
 
 export type SiteContent = {
   profile: ProfileContent;
@@ -41,6 +50,7 @@ export type SiteContent = {
   projects: ProjectContent[];
   family: FamilyMemberContent[];
   gallery: GalleryItemContent[];
+  milestones: MilestoneContent[];
 };
 
 export const defaultContent: SiteContent = {
@@ -144,5 +154,67 @@ export const defaultContent: SiteContent = {
   gallery: [
     { id: 1, src: "/images/scooter.jpg", caption: "Speed mode: ON 🚴", order: 1 },
     { id: 2, src: "/images/awesome.jpg", caption: "Certified Awesome Bro 😎", order: 2 },
+  ],
+  milestones: [
+    {
+      id: 1,
+      year: "2014",
+      title: "Hello, world!",
+      story:
+        "The journey begins — Sidra House welcomes its future chief engineer. First words loading…",
+      icon: "👶",
+      image: null,
+      order: 1,
+    },
+    {
+      id: 2,
+      year: "2018",
+      title: "The Awesome Bro era",
+      story:
+        "Small legs, giant attitude. The t-shirt said it first: awesome bro — and the title stuck.",
+      icon: "😎",
+      image: "/images/awesome.jpg",
+      order: 2,
+    },
+    {
+      id: 3,
+      year: "2021",
+      title: "First set of wheels",
+      story:
+        "The legendary green bike. Top speed unlocked, training wheels retired, neighbourhood conquered.",
+      icon: "🚴",
+      image: "/images/scooter.jpg",
+      order: 3,
+    },
+    {
+      id: 4,
+      year: "2023",
+      title: "Smart-home apprentice",
+      story:
+        "Started shadowing Baba in the lab — first automations with Home Assistant and Tuya. The lights of Sidra House obey me now.",
+      icon: "🏠",
+      image: null,
+      order: 4,
+    },
+    {
+      id: 5,
+      year: "2025",
+      title: "Faizzy World goes live",
+      story:
+        "Launched my own YouTube channel. Next season: videos supercharged with AI tools.",
+      icon: "🎬",
+      image: null,
+      order: 5,
+    },
+    {
+      id: 6,
+      year: "2026",
+      title: "Building the future",
+      story:
+        "Class 7, AI robot experiments, and this very website — built together with Baba in Next.js. This is just the beginning.",
+      icon: "🚀",
+      image: "/images/hero.jpg",
+      order: 6,
+    },
   ],
 };

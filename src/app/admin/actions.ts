@@ -178,6 +178,32 @@ export async function deleteGalleryAction(formData: FormData) {
   revalidatePath("/admin/family");
 }
 
+/* ---------- timeline milestones ---------- */
+
+export async function saveMilestoneAction(formData: FormData) {
+  const id = num(formData, "id", 0);
+  const image = str(formData, "image");
+  const data = {
+    year: str(formData, "year"),
+    title: str(formData, "title"),
+    story: str(formData, "story"),
+    icon: str(formData, "icon", "⭐"),
+    image: image || null,
+    order: num(formData, "order"),
+  };
+  if (!data.title || !data.year) return;
+  if (id) await prisma.milestone.update({ where: { id }, data });
+  else await prisma.milestone.create({ data });
+  refreshPublic();
+  revalidatePath("/admin/timeline");
+}
+
+export async function deleteMilestoneAction(formData: FormData) {
+  await prisma.milestone.delete({ where: { id: num(formData, "id") } });
+  refreshPublic();
+  revalidatePath("/admin/timeline");
+}
+
 /* ---------- messages ---------- */
 
 export async function toggleMessageReadAction(formData: FormData) {

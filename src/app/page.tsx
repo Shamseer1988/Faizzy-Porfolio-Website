@@ -11,6 +11,8 @@ import ScrollProgress from "@/components/ScrollProgress";
 import HeroFx from "@/components/HeroFx";
 import Parallax from "@/components/Parallax";
 import ScrollStory, { type StoryChapter } from "@/components/ScrollStory";
+import Timeline from "@/components/Timeline";
+import FloatingFx from "@/components/FloatingFx";
 import { getSiteContent } from "@/lib/content";
 
 export const revalidate = 60;
@@ -54,7 +56,7 @@ const storyChapters: StoryChapter[] = [
 ];
 
 export default async function Home() {
-  const { profile, skills, hobbies, projects, family, gallery } =
+  const { profile, skills, hobbies, projects, family, gallery, milestones } =
     await getSiteContent();
 
   return (
@@ -62,6 +64,7 @@ export default async function Home() {
       <RevealInit />
       <SmoothScroll />
       <ScrollProgress />
+      <FloatingFx />
       <Nav />
       <main className="wrap" id="top">
         {/* HERO */}
@@ -190,6 +193,17 @@ export default async function Home() {
               <p>Big fan of the legends. Dream: build a robot that can take penalty kicks.</p>
             </div>
           </div>
+        </section>
+
+        {/* LIFE TIMELINE — dynamic milestones from the admin backend */}
+        <section id="journey">
+          <p className="sec-eyebrow rv">{"// my journey"}</p>
+          <h2 className="sec-title rv">Born to build</h2>
+          <p className="sec-sub rv">
+            From first steps to first automations — the whole adventure so far. (Baba adds
+            new chapters from the admin panel as they happen.)
+          </p>
+          <Timeline milestones={milestones} />
         </section>
 
         {/* SKILLS */}

@@ -39,6 +39,11 @@ async function main() {
       data: c.gallery.map(({ id: _id, ...g }) => g),
     });
   }
+  if ((await prisma.milestone.count()) === 0) {
+    await prisma.milestone.createMany({
+      data: c.milestones.map(({ id: _id, ...m }) => m),
+    });
+  }
   console.log("Seed complete ✔");
 }
 
