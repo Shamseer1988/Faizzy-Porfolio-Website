@@ -1,7 +1,7 @@
 "use client";
 
 import Image from "next/image";
-import { useRef, useState } from "react";
+import { useRef, useState, useEffect } from "react";
 import {
   motion,
   AnimatePresence,
@@ -43,36 +43,135 @@ function WordReveal({ text, className }: { text: string; className?: string }) {
   );
 }
 
-// Pinned scrollytelling with a 3D photo carousel: chapters swap in place
-// against scroll — images rotate in like a deck of Figma frames, the copy
-// reveals word by word, and a football flies across the pinned scene from
-// bottom-right to top-left like a long pass.
+/* Paragraph reveal: sentences fade-slide in one by one */
+function ParagraphReveal({ text, className }: { text: string; className?: string }) {
+  const sentences = text.split(/(?<=[.!?])\s+/).filter(Boolean);
+  return (
+    <span className={className}>
+      {sentences.map((sentence, i) => (
+        <motion.span
+          key={i}
+          style={{ display: "inline" }}
+          initial={{ opacity: 0, y: 18, filter: "blur(4px)" }}
+          animate={{ opacity: 1, y: 0, filter: "blur(0px)" }}
+          transition={{
+            delay: 0.22 + i * 0.12,
+            duration: 0.6,
+            ease: [0.16, 1, 0.3, 1],
+          }}
+        >
+          {sentence}{" "}
+        </motion.span>
+      ))}
+    </span>
+  );
+}
+
+// Pinned scrollytelling with snap-to-chapter scrolling:
+// One mouse wheel tick = one chapter change. Images rotate in like a
+// deck of cards, copy reveals word by word, football flies across.
 export default function ScrollStory({ chapters }: { chapters: StoryChapter[] }) {
   const ref = useRef<HTMLDivElement>(null);
   const [active, setActive] = useState(0);
+  const activeRef = useRef(0);
   const reduce = useReducedMotion();
   const n = chapters.length;
+  const cooldownRef = useRef(false);
+
+  // Container height: each chapter maps to 100vh of scroll distance.
+  // Chapter i sits at scroll progress i/(n-1), so:
+  //   chapter 0 = very start (instant entry),
+  //   chapter n-1 = very end (instant exit).
+  const scrollHeight = n * 100; // vh
 
   const { scrollYProgress } = useScroll({ target: ref, offset: ["start start", "end end"] });
 
-  useMotionValueEvent(scrollYProgress, "change", (v) => {
-    const i = Math.max(0, Math.min(n - 1, Math.floor(v * n)));
-    if (i !== active) setActive(i);
+  // Smooth spring for continuous animations (ball, rail fill)
+  const smoothProgress = useSpring(scrollYProgress, {
+    stiffness: 100,
+    damping: 30,
+    mass: 0.8,
   });
 
-  // football long-pass: bottom-right → top-left with an arc + spin
-  const ballX = useTransform(scrollYProgress, [0.04, 0.96], ["46vw", "-46vw"]);
-  const ballY = useTransform(scrollYProgress, (p) => {
+  // Chapter detection: evenly spaced across full scroll range
+  useMotionValueEvent(scrollYProgress, "change", (v) => {
+    const i = Math.max(0, Math.min(n - 1, Math.round(v * (n - 1))));
+    if (i !== activeRef.current) {
+      activeRef.current = i;
+      setActive(i);
+    }
+  });
+
+  // ── Snap scrolling: one wheel tick = one chapter ──
+  useEffect(() => {
+    const el = ref.current;
+    if (!el || reduce) return;
+
+    const handleWheel = (e: WheelEvent) => {
+      // Ignore tiny deltas (noise from trackpads)
+      if (Math.abs(e.deltaY) < 4) return;
+
+      // Only intercept when the sticky is actually pinned
+      const rect = el.getBoundingClientRect();
+      const isPinned = rect.top <= 1 && rect.bottom >= window.innerHeight - 1;
+      if (!isPinned) return;
+
+      const current = activeRef.current;
+      const direction = e.deltaY > 0 ? 1 : -1;
+      const next = current + direction;
+
+      // At boundaries → don't intercept, let user scroll out of section
+      if (next < 0 || next >= n) return;
+
+      // Block native scroll
+      e.preventDefault();
+
+      // Skip if we're still animating from the last snap
+      if (cooldownRef.current) return;
+      cooldownRef.current = true;
+
+      // Target scroll position for chapter `next`
+      const storyTopAbs = window.scrollY + rect.top;
+      const scrollableDistance = el.offsetHeight - window.innerHeight;
+      const targetProgress = next / (n - 1);
+      const targetScroll = storyTopAbs + targetProgress * scrollableDistance;
+
+      // Use Lenis for buttery-smooth animated scroll
+      const lenis = (window as any).__lenis;
+      if (lenis) {
+        lenis.scrollTo(targetScroll, {
+          duration: 1.0,
+          easing: (t: number) => Math.min(1, 1.001 - Math.pow(2, -10 * t)),
+        });
+      } else {
+        window.scrollTo({ top: targetScroll, behavior: "smooth" });
+      }
+
+      // Cooldown: prevent rapid-fire chapter changes
+      setTimeout(() => {
+        cooldownRef.current = false;
+      }, 900);
+    };
+
+    // passive: false required to call preventDefault
+    el.addEventListener("wheel", handleWheel, { passive: false });
+    return () => el.removeEventListener("wheel", handleWheel);
+  }, [n, reduce]);
+
+  // football long-pass: bottom-right → top-left with arc + spin
+  const ballX = useTransform(smoothProgress, [0.04, 0.96], ["46vw", "-46vw"]);
+  const ballY = useTransform(smoothProgress, (p) => {
     const t = Math.max(0, Math.min(1, (p - 0.04) / 0.92));
     return `${34 - 68 * t - Math.sin(t * Math.PI) * 16}vh`;
   });
-  const ballRotate = useTransform(scrollYProgress, [0, 1], [0, -900]);
+  const ballRotate = useTransform(smoothProgress, [0, 1], [0, -900]);
+  const ballScale = useTransform(smoothProgress, [0, 0.5, 1], [0.7, 1.2, 0.7]);
 
   // hover tilt + glare on the photo stage
   const hx = useMotionValue(0);
   const hy = useMotionValue(0);
-  const tiltX = useSpring(useTransform(hy, [-0.5, 0.5], [10, -10]), { stiffness: 200, damping: 20 });
-  const tiltY = useSpring(useTransform(hx, [-0.5, 0.5], [-12, 12]), { stiffness: 200, damping: 20 });
+  const tiltX = useSpring(useTransform(hy, [-0.5, 0.5], [6, -6]), { stiffness: 180, damping: 26 });
+  const tiltY = useSpring(useTransform(hx, [-0.5, 0.5], [-8, 8]), { stiffness: 180, damping: 26 });
   const glareX = useTransform(hx, [-0.5, 0.5], ["18%", "82%"]);
   const glareY = useTransform(hy, [-0.5, 0.5], ["12%", "88%"]);
   const [hovering, setHovering] = useState(false);
@@ -117,7 +216,7 @@ export default function ScrollStory({ chapters }: { chapters: StoryChapter[] }) 
   }
 
   return (
-    <div className="story-outer" id="story" ref={ref} style={{ height: `${n * 100}vh` }}>
+    <div className="story-outer" id="story" ref={ref} style={{ height: `${scrollHeight}vh` }}>
       <div className="story-sticky">
         {/* ambient background: spotlight + giant chapter number watermark */}
         <div className="story-spot" aria-hidden="true" />
@@ -128,23 +227,23 @@ export default function ScrollStory({ chapters }: { chapters: StoryChapter[] }) 
             initial={{ opacity: 0, scale: 1.3, rotate: 6 }}
             animate={{ opacity: 1, scale: 1, rotate: 0 }}
             exit={{ opacity: 0, scale: 0.8, rotate: -6 }}
-            transition={{ duration: 0.5, ease: [0.16, 1, 0.3, 1] }}
+            transition={{ duration: 0.6, ease: [0.16, 1, 0.3, 1] }}
             aria-hidden="true"
           >
             {String(active + 1).padStart(2, "0")}
           </motion.span>
         </AnimatePresence>
 
-        {/* flying football */}
+        {/* flying football — with scale pulse */}
         <motion.span
           className="story-ball"
-          style={{ x: ballX, y: ballY, rotate: ballRotate }}
+          style={{ x: ballX, y: ballY, rotate: ballRotate, scale: ballScale }}
           aria-hidden="true"
         >
           ⚽
         </motion.span>
 
-        {/* section header lives inside the pinned screen — no dead gap */}
+        {/* section header */}
         <div className="story-head">
           <p className="sec-eyebrow">{"// my story"}</p>
           <h2 className="sec-title">Scroll through my world</h2>
@@ -157,51 +256,53 @@ export default function ScrollStory({ chapters }: { chapters: StoryChapter[] }) 
               {String(i + 1).padStart(2, "0")}
             </span>
           ))}
-          <motion.i className="story-rail-fill" style={{ scaleY: scrollYProgress }} />
+          <motion.i className="story-rail-fill" style={{ scaleY: smoothProgress }} />
         </div>
 
         <div className="story-grid">
-          {/* left: copy with word-by-word reveal */}
+          {/* left: copy with word-by-word reveal + sentence-staggered paragraph */}
           <div className="story-left">
             <AnimatePresence mode="wait">
               <motion.div
                 key={active}
                 initial={{ opacity: 0 }}
                 animate={{ opacity: 1 }}
-                exit={{ opacity: 0, y: -30 }}
-                transition={{ duration: 0.28 }}
+                exit={{ opacity: 0, y: -20 }}
+                transition={{ duration: 0.35, ease: [0.16, 1, 0.3, 1] }}
               >
                 <motion.p
-                  className="sec-eyebrow"
-                  initial={{ opacity: 0, x: -26 }}
-                  animate={{ opacity: 1, x: 0 }}
-                  transition={{ duration: 0.4 }}
+                  className="sec-eyebrow story-eyebrow-anim"
+                  initial={{ opacity: 0, x: -26, filter: "blur(6px)" }}
+                  animate={{ opacity: 1, x: 0, filter: "blur(0px)" }}
+                  transition={{ duration: 0.45 }}
                 >
                   {chapter.eyebrow}
                 </motion.p>
                 <h3 className="story-title">
                   <WordReveal text={chapter.title} />
                 </h3>
-                <motion.p
-                  className="story-text"
-                  initial={{ opacity: 0, y: 24 }}
-                  animate={{ opacity: 1, y: 0 }}
-                  transition={{ delay: 0.24, duration: 0.5, ease: [0.16, 1, 0.3, 1] }}
-                >
-                  {chapter.text}
-                </motion.p>
+                <p className="story-text">
+                  <ParagraphReveal text={chapter.text} />
+                </p>
+                {/* Decorative accent line */}
+                <motion.div
+                  className="story-accent-line"
+                  initial={{ scaleX: 0 }}
+                  animate={{ scaleX: 1 }}
+                  transition={{ delay: 0.4, duration: 0.7, ease: [0.16, 1, 0.3, 1] }}
+                />
                 <div className="chips" style={{ marginTop: 20 }}>
                   {chapter.chips.map((chip, ci) => (
                     <motion.span
                       className="chip"
                       key={chip}
-                      initial={{ opacity: 0, scale: 0.5, y: 14 }}
-                      animate={{ opacity: 1, scale: 1, y: 0 }}
+                      initial={{ opacity: 0, scale: 0.5, y: 14, filter: "blur(4px)" }}
+                      animate={{ opacity: 1, scale: 1, y: 0, filter: "blur(0px)" }}
                       transition={{
-                        delay: 0.3 + ci * 0.07,
+                        delay: 0.35 + ci * 0.08,
                         type: "spring",
-                        stiffness: 320,
-                        damping: 17,
+                        stiffness: 280,
+                        damping: 20,
                       }}
                     >
                       {chip}
@@ -249,21 +350,24 @@ export default function ScrollStory({ chapters }: { chapters: StoryChapter[] }) 
                       zIndex: n - Math.abs(rel),
                     }}
                     initial={false}
-                    // real 3D depth (translateZ): with preserve-3d the browser
-                    // sorts by depth not z-index, so queued cards must sit
-                    // physically behind the active one or they bleed through
                     animate={
                       rel < 0
-                        ? { opacity: 0, x: -180, rotateY: -45, scale: 0.86, z: -60 }
+                        ? { opacity: 0, x: -120, rotateY: -30, scale: 0.9, z: -60 }
                         : {
-                            opacity: rel > 2 ? 0 : 1 - rel * 0.3,
-                            x: behind * 52,
-                            rotateY: behind * 12,
-                            scale: 1 - behind * 0.06,
-                            z: behind * -110,
+                            opacity: rel > 2 ? 0 : 1 - rel * 0.25,
+                            x: behind * 40,
+                            rotateY: behind * 10,
+                            scale: 1 - behind * 0.05,
+                            z: behind * -90,
                           }
                     }
-                    transition={{ type: "spring", stiffness: 160, damping: 22 }}
+                    transition={{
+                      type: "spring",
+                      stiffness: 80,
+                      damping: 24,
+                      mass: 1,
+                      restDelta: 0.001,
+                    }}
                   >
                     <Image
                       src={c.src}
