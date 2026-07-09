@@ -1259,6 +1259,8 @@ section {
 /* ============ SCROLL STORY (pinned 3D scrollytelling) ============ */
 .story-outer {
   position: relative;
+  width: 100vw;
+  margin-left: calc(50% - 50vw);
 }
 .story-sticky {
   position: sticky;
@@ -1269,9 +1271,15 @@ section {
   flex-direction: column;
   justify-content: center;
   gap: clamp(14px, 3vh, 30px);
-  padding-left: 56px;
+  padding-inline: clamp(48px, 7vw, 130px);
   padding-top: 96px;
   overflow: hidden;
+}
+.story-head,
+.story-grid {
+  width: 100%;
+  max-width: 1620px;
+  margin-inline: auto;
 }
 .story-head {
   padding-top: 2vh;
@@ -1316,14 +1324,14 @@ section {
 }
 .story-grid {
   display: grid;
-  grid-template-columns: 1fr 1fr;
-  gap: clamp(24px, 5vw, 64px);
+  grid-template-columns: 0.9fr 1.1fr;
+  gap: clamp(24px, 5vw, 72px);
   align-items: center;
   flex: 1;
   min-height: 0;
 }
 .story-left {
-  max-width: 480px;
+  max-width: 520px;
   position: relative;
   z-index: 2;
 }
@@ -1408,7 +1416,7 @@ section {
 }
 .story-rail {
   position: absolute;
-  left: 16px;
+  left: clamp(14px, 2.4vw, 44px);
   top: 50%;
   transform: translateY(-50%);
   display: flex;

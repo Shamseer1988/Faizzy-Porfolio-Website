@@ -215,7 +215,7 @@ export default function ScrollStory({ chapters }: { chapters: StoryChapter[] }) 
           {/* right: 3D card carousel with hover tilt + glare */}
           <div
             className="story-stage"
-            style={{ height: "var(--story-stage-height, min(66vh, 600px))" }}
+            style={{ height: "var(--story-stage-height, min(74vh, 700px))" }}
             onMouseMove={onStageMove}
             onMouseEnter={() => setHovering(true)}
             onMouseLeave={onStageLeave}
@@ -249,14 +249,18 @@ export default function ScrollStory({ chapters }: { chapters: StoryChapter[] }) 
                       zIndex: n - Math.abs(rel),
                     }}
                     initial={false}
+                    // real 3D depth (translateZ): with preserve-3d the browser
+                    // sorts by depth not z-index, so queued cards must sit
+                    // physically behind the active one or they bleed through
                     animate={
                       rel < 0
-                        ? { opacity: 0, x: -140, rotateY: -42, scale: 0.86 }
+                        ? { opacity: 0, x: -180, rotateY: -45, scale: 0.86, z: -60 }
                         : {
-                            opacity: rel > 2 ? 0 : 1 - rel * 0.28,
-                            x: behind * 42,
-                            rotateY: behind * 13,
-                            scale: 1 - behind * 0.07,
+                            opacity: rel > 2 ? 0 : 1 - rel * 0.3,
+                            x: behind * 52,
+                            rotateY: behind * 12,
+                            scale: 1 - behind * 0.06,
+                            z: behind * -110,
                           }
                     }
                     transition={{ type: "spring", stiffness: 160, damping: 22 }}

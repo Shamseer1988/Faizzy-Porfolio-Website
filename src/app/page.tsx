@@ -25,6 +25,7 @@ const storyChapters: StoryChapter[] = [
     title: "Code, robots & a smart home",
     text: "Most kids watch the future — I build it. AI robot experiments, automations that run Sidra House with Home Assistant and Tuya, and apps made side-by-side with Baba.",
     chips: ["🤖 AI Robots", "🏠 Home Assistant", "🔌 Tuya", "💻 Next.js"],
+    focus: "50% 22%",
   },
   {
     src: "/images/scooter.jpg",
