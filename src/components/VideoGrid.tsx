@@ -47,20 +47,20 @@ export default function VideoGrid({ videos, channelUrl }: Props) {
   // Center video
   const centerVideo = videos[centerIdx];
 
-  // Orbiting videos: the rest of the videos up to 5 items on the orbit ring
+  // Orbiting videos: the rest of the videos, 2 on the left + 2 on the right
   const orbitVideos = videos
     .map((v, originalIdx) => ({ video: v, originalIdx }))
     .filter((item) => item.originalIdx !== centerIdx)
-    .slice(0, 5);
+    .slice(0, 4);
 
-  // Orbit coordinates (percentages from center of the container)
+  // Orbit coordinates (percentages from center of the container), kept
+  // well clear of the 320px-wide center card so nothing overlaps.
   // [top%, left%]
   const orbitPositions = [
-    { top: 22, left: 16, angle: -140, rot: -6 },   // Top-Left (Pos 0)
-    { top: 58, left: 10, angle: -70, rot: -4 },    // Bottom-Left (Pos 1)
-    { top: 78, left: 48, angle: 90, rot: 2 },      // Bottom (Pos 2)
-    { top: 58, left: 86, angle: 70, rot: 4 },      // Bottom-Right (Pos 3)
-    { top: 22, left: 80, angle: 140, rot: 6 },     // Top-Right (Pos 4)
+    { top: 24, left: 13, angle: -140, rot: -6 },  // Top-Left (Pos 0)
+    { top: 76, left: 13, angle: -70, rot: -4 },   // Bottom-Left (Pos 1)
+    { top: 24, left: 87, angle: 140, rot: 6 },    // Top-Right (Pos 2)
+    { top: 76, left: 87, angle: 70, rot: 4 },     // Bottom-Right (Pos 3)
   ];
 
   return (
@@ -272,7 +272,7 @@ export default function VideoGrid({ videos, channelUrl }: Props) {
         </div>
 
         <a
-          href="https://www.youtube.com/@faizzyworld3556"
+          href={channelUrl ?? "https://www.youtube.com/@faizzyworld3556"}
           target="_blank"
           rel="noopener noreferrer"
           className="vg-view-all-btn btn-primary"

@@ -3425,6 +3425,19 @@ main section:nth-of-type(even)::before {
   color: transparent;
 }
 
+/* ============ ADMIN LOGIN (static, no motion) ============ */
+.admin-login-card,
+.admin-login-card * {
+  animation: none !important;
+  transition: none !important;
+}
+.admin-login-card:hover {
+  transform: none;
+  box-shadow: var(--shadow);
+}
+.admin-login-card::after {
+  content: none;
+}
 
 /* ============ SIDE DOCK NAV ============ */
 .dock {

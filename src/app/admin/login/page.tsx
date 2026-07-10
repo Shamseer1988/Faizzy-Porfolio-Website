@@ -21,7 +21,7 @@ export default async function LoginPage({
         padding: 24,
       }}
     >
-      <form className="card" action={loginAction} style={{ width: "min(400px, 92vw)" }}>
+      <form className="card admin-login-card" action={loginAction} style={{ width: "min(400px, 92vw)" }}>
         <div style={{ textAlign: "center", marginBottom: 20 }}>
           <span className="logo-badge" style={{ margin: "0 auto 10px", display: "inline-grid" }}>
             Z

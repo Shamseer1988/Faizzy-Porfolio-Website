@@ -259,7 +259,7 @@ export const defaultContent: SiteContent = {
   videos: [
     {
       id: 1,
-      youtubeId: "",
+      youtubeId: "2PojXjLpui4",
       title: "Epic Football Match",
       description: "My best goals and highlights from this season's local junior tournament.",
       thumbnail: "/images/awesome.jpg",
@@ -272,7 +272,7 @@ export const defaultContent: SiteContent = {
     },
     {
       id: 2,
-      youtubeId: "",
+      youtubeId: "2u8VQ5s0JWg",
       title: "Building My Robot",
       description: "Step-by-step assembly of my custom Arduino obstacle avoiding robot buddy.",
       thumbnail: "/images/hero.jpg",
@@ -285,7 +285,7 @@ export const defaultContent: SiteContent = {
     },
     {
       id: 3,
-      youtubeId: "",
+      youtubeId: "7rHipHlLAu8",
       title: "Swimming Day",
       description: "Beating my personal best record in the 50m pool during summer camp.",
       thumbnail: "/images/20230427_075920.jpg",
@@ -298,7 +298,7 @@ export const defaultContent: SiteContent = {
     },
     {
       id: 4,
-      youtubeId: "",
+      youtubeId: "JDN4J0T0OzQ",
       title: "Cycle Adventure",
       description: "Exploring the offroad trails and hills around Korapra on two wheels.",
       thumbnail: "/images/scooter.jpg",
@@ -311,20 +311,7 @@ export const defaultContent: SiteContent = {
     },
     {
       id: 5,
-      youtubeId: "",
-      title: "Nature Photography",
-      description: "A compilation of macro insect photos and sunsets captured near our house.",
-      thumbnail: "/images/20210618_182607.jpg",
-      category: "Art",
-      duration: "7:15",
-      timeAgo: "1 month ago",
-      sticker: "🍃",
-      featured: true,
-      order: 5,
-    },
-    {
-      id: 6,
-      youtubeId: "",
+      youtubeId: "SYWXxf8V2hY",
       title: "Family Trip Vlog",
       description: "Our weekend getaway to the beach and amusement park with Baba and siblings.",
       thumbnail: "/images/family.jpg",
@@ -333,7 +320,7 @@ export const defaultContent: SiteContent = {
       timeAgo: "3 month ago",
       sticker: "💖",
       featured: true,
-      order: 6,
+      order: 5,
     },
   ],
 };
