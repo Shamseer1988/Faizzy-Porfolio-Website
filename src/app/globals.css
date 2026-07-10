@@ -1398,13 +1398,14 @@ section {
   width: min(90%, 58vh, 560px);
   aspect-ratio: 1;
   height: auto;
-  border-radius: 50%;
+  border-radius: 42% 58% 65% 35% / 45% 40% 60% 55%;
+  animation: blob-morph 11s ease-in-out infinite alternate;
   overflow: hidden;
   border: 1px solid var(--stroke-2);
   box-shadow: var(--shadow), 0 0 0 10px var(--glass);
   background: var(--glass);
   /* Only use GPU-composited properties to avoid jitter */
-  will-change: transform, opacity;
+  will-change: transform, opacity, border-radius;
   backface-visibility: hidden;
   -webkit-backface-visibility: hidden;
   transform: translateZ(0);
@@ -1412,7 +1413,18 @@ section {
 .story-img img {
   object-fit: cover;
 }
-/* rotating dashed orbit ring around the circular photo */
+@keyframes blob-morph {
+  0% {
+    border-radius: 42% 58% 65% 35% / 45% 40% 60% 55%;
+  }
+  50% {
+    border-radius: 60% 40% 38% 62% / 55% 62% 38% 45%;
+  }
+  100% {
+    border-radius: 38% 62% 55% 45% / 62% 35% 65% 38%;
+  }
+}
+/* rotating dashed orbit ring tracing the blob shape */
 .story-orbit {
   position: absolute;
   inset: 0;
@@ -1421,10 +1433,10 @@ section {
   aspect-ratio: 1;
   height: auto;
   border: 2px dashed rgba(69, 227, 255, 0.35);
-  border-radius: 50%;
+  border-radius: 42% 58% 65% 35% / 45% 40% 60% 55%;
   pointer-events: none;
   z-index: 1;
-  animation: orbit-spin 40s linear infinite;
+  animation: orbit-spin 40s linear infinite, blob-morph 11s ease-in-out infinite alternate 1.5s;
 }
 :root:not([data-theme="dark"]) .story-orbit {
   border-color: rgba(6, 147, 196, 0.3);
