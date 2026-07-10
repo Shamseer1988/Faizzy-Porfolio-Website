@@ -236,7 +236,9 @@ export async function saveVideoAction(formData: FormData) {
     featured: formData.get("featured") === "on",
     order: num(formData, "order"),
   };
-  if (!data.youtubeId || !data.title) return;
+  // youtubeId may be left blank for a "coming soon" video — the homepage
+  // falls back to a subscribe card instead of embedding a real player.
+  if (!data.title) return;
   if (id) await prisma.video.update({ where: { id }, data });
   else await prisma.video.create({ data });
   refreshPublic();

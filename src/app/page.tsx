@@ -12,71 +12,13 @@ import ScrollStory, { type StoryChapter } from "@/components/ScrollStory";
 import Timeline from "@/components/Timeline";
 import FloatingFx from "@/components/FloatingFx";
 import SideDock from "@/components/SideDock";
-import VideoGalaxy, { type GalaxyVideo } from "@/components/VideoGalaxy";
+import ThrowbackGallery from "@/components/ThrowbackGallery";
+import VideoGrid from "@/components/VideoGrid";
 import { getSiteContent } from "@/lib/content";
 
 export const revalidate = 60;
 
 const famAccents = ["", "lime", "amber", ""];
-
-// Sample video cards for the "My Video Galaxy" section — swap thumbnails
-// and add a real `videoId` once episodes go live on the channel.
-const galaxyVideos: GalaxyVideo[] = [
-  {
-    id: 1,
-    title: "Epic Football Match",
-    src: "/images/awesome.jpg",
-    duration: "12:45",
-    ago: "2 days ago",
-    emoji: "🏆",
-    accent: "gold",
-  },
-  {
-    id: 2,
-    title: "Building My Robot",
-    src: "/images/hero.jpg",
-    duration: "9:32",
-    ago: "1 week ago",
-    emoji: "🤖",
-    accent: "sky",
-  },
-  {
-    id: 3,
-    title: "Cycle Adventure",
-    src: "/images/scooter.jpg",
-    duration: "5:20",
-    ago: "3 weeks ago",
-    emoji: "🚴",
-    accent: "orange",
-  },
-  {
-    id: 4,
-    title: "Sunny Day Fun",
-    src: "/images/20230427_075920.jpg",
-    duration: "6:11",
-    ago: "2 weeks ago",
-    emoji: "☀️",
-    accent: "lime",
-  },
-  {
-    id: 5,
-    title: "Nature Explorer",
-    src: "/images/20210618_182607.jpg",
-    duration: "7:15",
-    ago: "1 month ago",
-    emoji: "🌿",
-    accent: "teal",
-  },
-  {
-    id: 6,
-    title: "Family Trip Vlog",
-    src: "/images/family.jpg",
-    duration: "10:18",
-    ago: "1 month ago",
-    emoji: "🏡",
-    accent: "rose",
-  },
-];
 
 const storyChapters: StoryChapter[] = [
   {
@@ -120,7 +62,7 @@ const storyChapters: StoryChapter[] = [
 ];
 
 export default async function Home() {
-  const { profile, skills, hobbies, projects, family, gallery, milestones } =
+  const { profile, skills, hobbies, projects, family, gallery, milestones, videos } =
     await getSiteContent();
 
   // Hero floating cards: his portrait + gallery photos (both editable from
@@ -281,16 +223,18 @@ export default async function Home() {
         <section id="youtube">
           <span className="sec-mark" aria-hidden="true">FAIZZY</span>
           <p className="sec-eyebrow rv" style={{ color: "var(--yt)" }}>
-            {"// zohan tv"}
+            {"// creator zone"}
           </p>
-          <h2 className="sec-title rv">My Video Galaxy ✨</h2>
+          <h2 className="sec-title rv">Faizzy World 🎬</h2>
           <p className="sec-sub rv">
-            Explore my adventures, games and fun moments — youtube.com/{profile.youtubeHandle}
+            My own YouTube channel — check out my latest videos below or{" "}
+            <a href={profile.youtubeUrl} target="_blank" rel="noopener noreferrer" style={{ color: "var(--cyan)", textDecoration: "underline" }}>
+              visit my channel
+            </a>.
           </p>
-          <div className="rv">
-            <VideoGalaxy videos={galaxyVideos} channelUrl={profile.youtubeUrl} />
-          </div>
+          <VideoGrid videos={videos} channelUrl={profile.youtubeUrl} />
         </section>
+
 
         {/* FAMILY */}
         <section id="family">
@@ -324,22 +268,15 @@ export default async function Home() {
           </div>
         </section>
 
-        {/* GALLERY */}
+        {/* GALLERY — 3D rotating carousel with filters & lightbox */}
         <section id="gallery">
           <span className="sec-mark" aria-hidden="true">2014</span>
           <p className="sec-eyebrow rv">{"// throwback"}</p>
           <h2 className="sec-title rv">Loading… since 2014</h2>
-          <p className="sec-sub rv">Proof that the need for speed started early.</p>
-          <div className="gal">
-            {gallery.map((g, i) => (
-              <Parallax amount={i % 2 ? 46 : 22} key={g.id}>
-                <figure className={`pola gold-ring rv${i % 2 ? " d1" : ""}`}>
-                  <Image src={g.src} alt={g.caption} width={800} height={1000} />
-                  <figcaption>{g.caption}</figcaption>
-                </figure>
-              </Parallax>
-            ))}
-          </div>
+          <p className="sec-sub rv">
+            Drag, spin &amp; click — a 3D archive of the journey so far.
+          </p>
+          <ThrowbackGallery items={gallery} />
         </section>
 
         {/* CONTACT */}

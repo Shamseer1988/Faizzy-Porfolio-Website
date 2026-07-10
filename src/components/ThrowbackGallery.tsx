@@ -43,7 +43,6 @@ export default function ThrowbackGallery({ items }: Props) {
   const [yearFilter, setYearFilter] = useState("all");
   const [lightbox, setLightbox] = useState<GalleryItem | null>(null);
   const [lightboxIdx, setLightboxIdx] = useState(0);
-  const [mounted, setMounted] = useState(false);
 
   const filtered = enriched.filter(
     (it) =>
@@ -83,7 +82,6 @@ export default function ThrowbackGallery({ items }: Props) {
   }, []);
 
   useEffect(() => {
-    setMounted(true);
     startAuto();
     return () => {
       stopAuto();
@@ -228,8 +226,7 @@ export default function ThrowbackGallery({ items }: Props) {
             </div>
           ) : (
             filtered.map((item, idx) => {
-              // On SSR / before mount: render cards at rest position, no dynamic styles
-              const itemAngle = mounted ? (angle + idx * angleStep) % 360 : idx * angleStep;
+              const itemAngle = (angle + idx * angleStep) % 360;
               const rad = (itemAngle * Math.PI) / 180;
               const x = Math.sin(rad) * radius;
               const z = Math.cos(rad) * radius;

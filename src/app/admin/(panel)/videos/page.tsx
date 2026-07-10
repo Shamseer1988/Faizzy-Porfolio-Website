@@ -21,7 +21,8 @@ export default async function AdminVideos() {
         <p style={{ margin: 0 }}>
           Manage videos shown on the homepage in the &quot;Creator Zone&quot;.
           You can feature up to 4 videos. Provide the YouTube 11-character video ID
-          (e.g., for <code>https://www.youtube.com/watch?v=dQw4w9WgXcQ</code>, the ID is <code>dQw4w9WgXcQ</code>).
+          (e.g., for <code>https://www.youtube.com/watch?v=dQw4w9WgXcQ</code>, the ID is <code>dQw4w9WgXcQ</code>) —
+          or leave it blank to show a &quot;coming soon&quot; card until the real video is uploaded.
         </p>
       </div>
 
@@ -34,11 +35,10 @@ export default async function AdminVideos() {
 
           <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr 100px", gap: 12, marginBottom: 12 }}>
             <div className="field">
-              <label>YouTube Video ID (required)</label>
+              <label>YouTube Video ID (leave blank for &quot;coming soon&quot;)</label>
               <input
                 name="youtubeId"
                 defaultValue={v?.youtubeId ?? ""}
-                required
                 placeholder="e.g. dQw4w9WgXcQ"
                 style={inputStyle}
               />

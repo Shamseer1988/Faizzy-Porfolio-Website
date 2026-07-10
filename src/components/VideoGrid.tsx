@@ -1,9 +1,9 @@
 "use client";
 
-import { useState, useEffect, useRef, useCallback } from "react";
+import { useState, useEffect } from "react";
 import type { VideoContent } from "@/lib/defaults";
 
-type Props = { videos: VideoContent[] };
+type Props = { videos: VideoContent[]; channelUrl?: string };
 
 // Video Thumbnail URL helpers
 function getThumbUrl(v: VideoContent) {
@@ -14,15 +14,10 @@ function getThumbFallback(v: VideoContent) {
   return `https://img.youtube.com/vi/${v.youtubeId}/hqdefault.jpg`;
 }
 
-export default function VideoGrid({ videos: initialVideos }: Props) {
-  const [videos, setVideos] = useState<VideoContent[]>(initialVideos);
+export default function VideoGrid({ videos, channelUrl }: Props) {
   const [centerIdx, setCenterIdx] = useState(0);
   const [activePlay, setActivePlay] = useState<VideoContent | null>(null);
   const [isMobile, setIsMobile] = useState(false);
-
-  useEffect(() => {
-    setVideos(initialVideos);
-  }, [initialVideos]);
 
   // Responsive layout check
   useEffect(() => {
@@ -300,22 +295,32 @@ export default function VideoGrid({ videos: initialVideos }: Props) {
               {activePlay.description && <p className="vm-desc">{activePlay.description}</p>}
             </div>
             <div className="vm-player-wrap">
-              <iframe
-                className="vm-player"
-                src={`https://www.youtube.com/embed/${activePlay.youtubeId}?autoplay=1&rel=0&modestbranding=1&color=white`}
-                title={activePlay.title}
-                allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share"
-                allowFullScreen
-              />
+              {activePlay.youtubeId ? (
+                <iframe
+                  className="vm-player"
+                  src={`https://www.youtube.com/embed/${activePlay.youtubeId}?autoplay=1&rel=0&modestbranding=1&color=white`}
+                  title={activePlay.title}
+                  allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share"
+                  allowFullScreen
+                />
+              ) : (
+                <div className="vm-soon">
+                  <img src={getThumbUrl(activePlay)} alt={activePlay.title} className="vm-soon-bg" />
+                  <div className="vm-soon-overlay">
+                    <span className="vm-soon-play">▶</span>
+                    <p>New episode rendering… full video drops soon on my channel!</p>
+                  </div>
+                </div>
+              )}
             </div>
             <div className="vm-footer">
               <a
-                href={`https://www.youtube.com/watch?v=${activePlay.youtubeId}`}
+                href={activePlay.youtubeId ? `https://www.youtube.com/watch?v=${activePlay.youtubeId}` : channelUrl}
                 target="_blank"
                 rel="noopener noreferrer"
                 className="btn btn-yt"
               >
-                ▶ Open on YouTube
+                {activePlay.youtubeId ? "▶ Open on YouTube" : "🔔 Watch on YouTube"}
               </a>
             </div>
           </div>
