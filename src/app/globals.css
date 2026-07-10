@@ -2277,12 +2277,38 @@ main section:nth-of-type(even)::before {
 }
 
 /* ============ ADVANCED LENIS SCROLL VELOCITY EFFECTS ============ */
-/* Zoom and skew images in real-time as the user scrolls fast */
-.jd-photo img,
-.story-img img,
+/* Zoom and lean flow images as the user scrolls fast. Only applied to
+   images in normal document flow — inside the pinned 3D decks it would
+   fight the spring choreography and make the photos vibrate. The values
+   are pre-smoothed per-frame in SmoothScroll, so no CSS transition. */
 .family-photo img,
 .pola img {
   transform: scale(calc(1 + var(--scroll-speed, 0) * 0.0016)) skewY(calc(var(--scroll-velocity, 0) * -0.012deg));
-  transition: transform 0.22s cubic-bezier(0.16, 1, 0.3, 1);
   will-change: transform;
+}
+
+/* ============ CINEMATIC PHOTO TREATMENT (pinned decks) ============ */
+/* Slow Ken Burns drift inside the frame + a filmic vignette for depth */
+.story-img img,
+.jd-photo img {
+  animation: kenburns 18s ease-in-out infinite alternate;
+  will-change: transform;
+}
+@keyframes kenburns {
+  from {
+    transform: scale(1.02) translateY(0);
+  }
+  to {
+    transform: scale(1.1) translateY(-1.6%);
+  }
+}
+.story-img::after {
+  content: "";
+  position: absolute;
+  inset: 0;
+  border-radius: inherit;
+  background: linear-gradient(180deg, transparent 58%, rgba(2, 8, 28, 0.34)),
+    radial-gradient(130% 95% at 50% 28%, transparent 62%, rgba(2, 8, 28, 0.24));
+  pointer-events: none;
+  z-index: 2;
 }

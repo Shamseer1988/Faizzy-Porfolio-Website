@@ -23,18 +23,29 @@ export default function SmoothScroll() {
     });
 
     // Expose Lenis globally so ScrollStory can snap-scroll to chapters
-    (window as any).__lenis = lenis;
+    (window as unknown as { __lenis?: Lenis }).__lenis = lenis;
 
-    lenis.on("scroll", (e) => {
-      const velocity = Math.max(-25, Math.min(25, e.velocity));
-      const speed = Math.abs(velocity);
-      html.style.setProperty("--scroll-velocity", `${velocity}`);
-      html.style.setProperty("--scroll-speed", `${speed}`);
+    // Velocity-reactive CSS vars for image effects. Writing the raw Lenis
+    // velocity every frame makes elements vibrate (each write restarts CSS
+    // transitions), so we ease toward it in the rAF loop instead, decay it
+    // when scrolling stops, and snap a small dead-zone to exactly zero.
+    let targetVelocity = 0;
+    let smoothVelocity = 0;
+    lenis.on("scroll", (e: { velocity: number }) => {
+      targetVelocity = Math.max(-25, Math.min(25, e.velocity));
     });
 
     let frame = 0;
     const raf = (time: number) => {
       lenis.raf(time);
+      targetVelocity *= 0.92;
+      smoothVelocity += (targetVelocity - smoothVelocity) * 0.1;
+      if (Math.abs(smoothVelocity) < 0.05 && Math.abs(targetVelocity) < 0.05) {
+        smoothVelocity = 0;
+        targetVelocity = 0;
+      }
+      html.style.setProperty("--scroll-velocity", smoothVelocity.toFixed(3));
+      html.style.setProperty("--scroll-speed", Math.abs(smoothVelocity).toFixed(3));
       frame = requestAnimationFrame(raf);
     };
     frame = requestAnimationFrame(raf);
@@ -42,7 +53,7 @@ export default function SmoothScroll() {
     return () => {
       cancelAnimationFrame(frame);
       lenis.destroy();
-      delete (window as any).__lenis;
+      delete (window as unknown as { __lenis?: unknown }).__lenis;
       html.style.scrollBehavior = prevBehavior;
     };
   }, []);
