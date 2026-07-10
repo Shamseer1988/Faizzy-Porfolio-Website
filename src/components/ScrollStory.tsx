@@ -20,8 +20,10 @@ export type StoryChapter = {
   title: string;
   text: string;
   chips: string[];
-  /** CSS object-position for the photo inside the tall frame */
+  /** CSS object-position for the photo inside the frame */
   focus?: string;
+  /** two floating emoji badges shown beside the circular photo */
+  badges?: [string, string];
 };
 
 function WordReveal({ text, className }: { text: string; className?: string }) {
@@ -338,6 +340,37 @@ export default function ScrollStory({ chapters }: { chapters: StoryChapter[] }) 
                 scale: hovering ? 1.03 : 1,
               }}
             >
+              {/* rotating dashed orbit around the circular photo */}
+              <span className="story-orbit" aria-hidden="true" />
+
+              {/* per-chapter floating emoji badges */}
+              <AnimatePresence mode="popLayout">
+                <motion.span
+                  key={`b1-${active}`}
+                  className="story-badge b1"
+                  initial={{ scale: 0, rotate: -60 }}
+                  animate={{ scale: 1, rotate: 0 }}
+                  exit={{ scale: 0, rotate: 60 }}
+                  transition={{ type: "spring", stiffness: 300, damping: 16 }}
+                  aria-hidden="true"
+                >
+                  {chapter.badges?.[0] ?? "🤖"}
+                </motion.span>
+              </AnimatePresence>
+              <AnimatePresence mode="popLayout">
+                <motion.span
+                  key={`b2-${active}`}
+                  className="story-badge b2"
+                  initial={{ scale: 0, rotate: 60 }}
+                  animate={{ scale: 1, rotate: 0 }}
+                  exit={{ scale: 0, rotate: -60 }}
+                  transition={{ type: "spring", stiffness: 300, damping: 16, delay: 0.08 }}
+                  aria-hidden="true"
+                >
+                  {chapter.badges?.[1] ?? "✨"}
+                </motion.span>
+              </AnimatePresence>
+
               {chapters.map((c, i) => {
                 const rel = i - active;
                 const behind = Math.min(Math.max(rel, -1), 3);
@@ -345,14 +378,7 @@ export default function ScrollStory({ chapters }: { chapters: StoryChapter[] }) 
                   <motion.div
                     key={c.src}
                     className="story-img gold-ring"
-                    style={{
-                      position: "absolute",
-                      top: 0,
-                      left: 0,
-                      width: "100%",
-                      height: "100%",
-                      zIndex: n - Math.abs(rel),
-                    }}
+                    style={{ zIndex: n - Math.abs(rel) }}
                     initial={false}
                     animate={
                       rel < 0

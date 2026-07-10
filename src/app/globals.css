@@ -1393,14 +1393,15 @@ section {
 }
 .story-img {
   position: absolute;
-  top: 0;
-  left: 0;
-  width: 100%;
-  height: 100%;
-  border-radius: 28px;
+  inset: 0;
+  margin: auto;
+  width: min(90%, 58vh, 560px);
+  aspect-ratio: 1;
+  height: auto;
+  border-radius: 50%;
   overflow: hidden;
   border: 1px solid var(--stroke-2);
-  box-shadow: var(--shadow), 0 0 0 8px var(--glass);
+  box-shadow: var(--shadow), 0 0 0 10px var(--glass);
   background: var(--glass);
   /* Only use GPU-composited properties to avoid jitter */
   will-change: transform, opacity;
@@ -1410,6 +1411,57 @@ section {
 }
 .story-img img {
   object-fit: cover;
+}
+/* rotating dashed orbit ring around the circular photo */
+.story-orbit {
+  position: absolute;
+  inset: 0;
+  margin: auto;
+  width: calc(min(90%, 58vh, 560px) + 64px);
+  aspect-ratio: 1;
+  height: auto;
+  border: 2px dashed rgba(69, 227, 255, 0.35);
+  border-radius: 50%;
+  pointer-events: none;
+  z-index: 1;
+  animation: orbit-spin 40s linear infinite;
+}
+:root:not([data-theme="dark"]) .story-orbit {
+  border-color: rgba(6, 147, 196, 0.3);
+}
+[data-theme="dark"] .story-orbit {
+  border-color: rgba(69, 227, 255, 0.35);
+}
+@keyframes orbit-spin {
+  to {
+    transform: rotate(360deg);
+  }
+}
+/* floating emoji badges hugging the circle, like sticker pins */
+.story-badge {
+  position: absolute;
+  width: 68px;
+  aspect-ratio: 1;
+  border-radius: 50%;
+  display: grid;
+  place-items: center;
+  font-size: 32px;
+  z-index: 7;
+  box-shadow: 0 12px 28px -8px rgba(2, 8, 28, 0.5);
+  border: 3px solid rgba(255, 255, 255, 0.85);
+  pointer-events: none;
+}
+.story-badge.b1 {
+  top: 6%;
+  right: 10%;
+  background: #ffd76a;
+  animation: hz-float 5s ease-in-out infinite;
+}
+.story-badge.b2 {
+  bottom: 9%;
+  left: 9%;
+  background: #9be88f;
+  animation: hz-float 6s ease-in-out infinite 1.2s;
 }
 .story-glare {
   position: absolute;
@@ -1480,7 +1532,7 @@ section {
     justify-content: center;
   }
   .story-head {
-    padding-top: 8vh;
+    padding-top: 78px;
   }
   .story-head .sec-title {
     font-size: clamp(24px, 6.6vw, 32px);
@@ -1492,8 +1544,8 @@ section {
   }
   .story-stage {
     order: -1;
-    height: min(40vh, 380px);
-    --story-stage-height: min(40vh, 380px);
+    height: min(30vh, 300px);
+    --story-stage-height: min(30vh, 300px);
   }
   .story-rail {
     display: none;
@@ -1502,8 +1554,22 @@ section {
     font-size: 160px;
     bottom: -2%;
   }
+  .story-img {
+    width: min(74%, 27vh);
+  }
+  .story-orbit {
+    width: calc(min(74%, 27vh) + 32px);
+  }
+  .story-badge {
+    width: 50px;
+    font-size: 24px;
+  }
   .story-title {
-    font-size: clamp(26px, 7vw, 34px);
+    font-size: clamp(24px, 6.4vw, 30px);
+  }
+  .story-text {
+    font-size: 14.5px;
+    line-height: 1.55;
   }
   .story-ball {
     font-size: 26px;
@@ -1522,7 +1588,8 @@ section {
 }
 .story-static-row .story-img {
   position: relative;
-  height: 380px;
+  height: auto;
+  margin: 0 auto;
 }
 @media (max-width: 720px) {
   .story-static-row {
@@ -2240,6 +2307,9 @@ main section:nth-of-type(even)::before {
 .jd-card.gold-ring,
 .story-img.gold-ring {
   position: absolute;
+}
+.story-static-row .story-img.gold-ring {
+  position: relative;
 }
 .gold-ring::before {
   content: "";

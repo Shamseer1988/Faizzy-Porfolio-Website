@@ -27,6 +27,7 @@ const storyChapters: StoryChapter[] = [
     text: "Most kids watch the future — I build it. From programming AI-powered robots that respond to voice commands, to wiring up smart automations that control every light and sensor in Sidra House through Home Assistant and Tuya, my evenings are a maker lab in full swing. Baba and I pair-program real apps with Next.js — this very website is one of them.",
     chips: ["🤖 AI Robots", "🏠 Home Assistant", "🔌 Tuya", "💻 Next.js", "🧠 Machine Learning", "⚙️ Automation"],
     focus: "50% 22%",
+    badges: ["🤖", "✨"],
   },
   {
     src: "/images/scooter.jpg",
@@ -35,6 +36,7 @@ const storyChapters: StoryChapter[] = [
     title: "On wheels since day one",
     text: "Before the keyboard there were wheels. Scooters, skates, cycles — if it rolls, I ride it. My first scooter trick happened before I could write my name. Top speed is a work in progress, but the grin has been permanent since day one. The neighbourhood knows me as the kid who never walks when he can ride.",
     chips: ["🛹 Skating", "🚴 Cycling", "⚡ Full speed", "🛴 Scooter tricks", "🌪️ Street runs"],
+    badges: ["🛴", "⚡"],
   },
   {
     src: "/images/awesome.jpg",
@@ -43,6 +45,7 @@ const storyChapters: StoryChapter[] = [
     title: "Certified awesome bro",
     text: "Football every evening, legends on the wall, friends on speed dial. The pitch is my second screen — where bugs are tackles and deploys are goals. One day my robot will take penalty kicks for me, but until that firmware update drops, I take them myself. Big-league dreams start with small-field hustle.",
     chips: ["⚽ Football", "🌟 Big-league dreams", "🎈 Friends", "🏆 Weekend matches", "🎮 Gaming"],
+    badges: ["⚽", "🏆"],
   },
   {
     src: "/images/family.jpg",
@@ -52,6 +55,7 @@ const storyChapters: StoryChapter[] = [
     text: "Every maker needs a crew — and mine is world class. Amina runs the style department and keeps the lab looking sharp. Nooh is the assistant who tests every prototype first. Umma keeps the whole operation running smoothly, and Baba is the lead engineer-slash-coach behind every project. Together, we are Team Sidra House.",
     chips: ["👧 Amina Zahra", "👦 Nooh", "👨‍💻 Baba", "👩 Umma", "🏡 Sidra House", "💪 Teamwork"],
     focus: "68% 22%",
+    badges: ["💛", "🏡"],
   },
 ];
 
