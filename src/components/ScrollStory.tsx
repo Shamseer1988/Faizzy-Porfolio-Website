@@ -137,7 +137,11 @@ export default function ScrollStory({ chapters }: { chapters: StoryChapter[] }) 
       const targetScroll = storyTopAbs + targetProgress * scrollableDistance;
 
       // Use Lenis for buttery-smooth animated scroll
-      const lenis = (window as any).__lenis;
+      const lenis = (
+        window as unknown as {
+          __lenis?: { scrollTo: (t: number, o: { duration: number; easing: (t: number) => number }) => void };
+        }
+      ).__lenis;
       if (lenis) {
         lenis.scrollTo(targetScroll, {
           duration: 1.0,
