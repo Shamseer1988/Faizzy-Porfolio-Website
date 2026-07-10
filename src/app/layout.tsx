@@ -8,6 +8,8 @@ import "@fontsource/plus-jakarta-sans/700.css";
 import "@fontsource/plus-jakarta-sans/800.css";
 import "./globals.css";
 import CursorFx from "@/components/CursorFx";
+import CardFx from "@/components/CardFx";
+import CinematicBg from "@/components/CinematicBg";
 
 const siteUrl = process.env.NEXT_PUBLIC_SITE_URL ?? "http://localhost:3000";
 
@@ -79,9 +81,6 @@ export default function RootLayout({
       </head>
       <body suppressHydrationWarning>
         <div className="bg-fx" aria-hidden="true">
-          <div className="blob blob-1" />
-          <div className="blob blob-2" />
-          <div className="blob blob-3" />
           {bgStars.map((s, i) => (
             <span
               key={i}
@@ -96,7 +95,9 @@ export default function RootLayout({
             />
           ))}
         </div>
+        <CinematicBg />
         <CursorFx />
+        <CardFx />
         {children}
       </body>
     </html>

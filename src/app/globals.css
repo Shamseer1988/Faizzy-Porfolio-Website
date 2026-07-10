@@ -175,9 +175,9 @@ h3 {
 }
 
 .wrap {
-  max-width: 1120px;
+  max-width: 1620px;
   margin: 0 auto;
-  padding: 0 24px;
+  padding: 0 clamp(24px, 4vw, 64px);
 }
 
 /* ============ NAV ============ */
@@ -186,8 +186,8 @@ h3 {
   top: 14px;
   z-index: 50;
   margin: 14px auto 0;
-  max-width: 1120px;
-  padding: 0 16px;
+  max-width: 1620px;
+  padding: 0 clamp(16px, 3vw, 48px);
 }
 .nav-inner {
   display: flex;
@@ -2311,4 +2311,72 @@ main section:nth-of-type(even)::before {
     radial-gradient(130% 95% at 50% 28%, transparent 62%, rgba(2, 8, 28, 0.24));
   pointer-events: none;
   z-index: 2;
+}
+
+
+/* ============ CINEMATIC BACKGROUND (canvas aurora + veil) ============ */
+.bg-cinema {
+  position: fixed;
+  inset: 0;
+  z-index: -2;
+  pointer-events: none;
+}
+.bg-veil {
+  position: fixed;
+  inset: 0;
+  z-index: -1;
+  pointer-events: none;
+  background: linear-gradient(180deg, rgba(6, 10, 24, 0.42) 0%, rgba(6, 10, 24, 0.66) 100%);
+}
+@media (prefers-color-scheme: light) {
+  :root:not([data-theme="dark"]) .bg-veil {
+    background: linear-gradient(180deg, rgba(238, 243, 252, 0.5) 0%, rgba(238, 243, 252, 0.72) 100%);
+  }
+}
+:root[data-theme="light"] .bg-veil {
+  background: linear-gradient(180deg, rgba(238, 243, 252, 0.5) 0%, rgba(238, 243, 252, 0.72) 100%);
+}
+:root[data-theme="dark"] .bg-veil {
+  background: linear-gradient(180deg, rgba(6, 10, 24, 0.42) 0%, rgba(6, 10, 24, 0.66) 100%);
+}
+
+/* ============ CARD HOVER FX (cursor spotlight + 3D tilt) ============ */
+.card {
+  position: relative;
+  overflow: hidden;
+}
+.card::after {
+  content: "";
+  position: absolute;
+  inset: 0;
+  border-radius: inherit;
+  background: radial-gradient(
+    340px circle at var(--mx, 50%) var(--my, 50%),
+    var(--cyan-soft),
+    transparent 62%
+  );
+  opacity: 0;
+  transition: opacity 0.35s ease;
+  pointer-events: none;
+}
+.card:hover::after {
+  opacity: 1;
+}
+.card:hover {
+  transform: perspective(900px) rotateX(var(--ry, 0deg)) rotateY(var(--rx, 0deg))
+    translateY(-6px);
+  border-color: var(--stroke-2);
+  box-shadow: var(--shadow), 0 0 0 1px var(--cyan-soft);
+}
+.card .ic {
+  transition: transform 0.35s cubic-bezier(0.16, 1, 0.3, 1);
+}
+.card:hover .ic {
+  transform: scale(1.14) rotate(-8deg);
+}
+.card:hover h3 {
+  background: linear-gradient(92deg, var(--text) 20%, var(--cyan) 90%);
+  -webkit-background-clip: text;
+  background-clip: text;
+  color: transparent;
 }
