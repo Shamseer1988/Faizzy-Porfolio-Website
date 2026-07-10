@@ -2,6 +2,8 @@ import Link from "next/link";
 import LiveClock from "./LiveClock";
 import ThemeToggle from "./ThemeToggle";
 
+// Minimal top bar: logo, live clock and theme toggle. Section links live
+// in the floating SideDock on the right edge.
 export default function Nav() {
   return (
     <nav className="site-nav">
@@ -10,15 +12,6 @@ export default function Nav() {
           <span className="logo-badge">Z</span>
           Zohan<span style={{ color: "var(--cyan)" }}>.</span>
         </Link>
-        <div className="nav-links">
-          <Link href="/#about">About</Link>
-          <Link href="/#journey">Journey</Link>
-          <Link href="/#skills">Skills</Link>
-          <Link href="/#projects">Projects</Link>
-          <Link href="/#youtube">YouTube</Link>
-          <Link href="/#family">Family</Link>
-          <Link href="/#contact">Contact</Link>
-        </div>
         <LiveClock variant="nav" />
         <ThemeToggle />
       </div>

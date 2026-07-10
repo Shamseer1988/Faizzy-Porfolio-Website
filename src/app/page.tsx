@@ -11,6 +11,7 @@ import Parallax from "@/components/Parallax";
 import ScrollStory, { type StoryChapter } from "@/components/ScrollStory";
 import Timeline from "@/components/Timeline";
 import FloatingFx from "@/components/FloatingFx";
+import SideDock from "@/components/SideDock";
 import { getSiteContent } from "@/lib/content";
 
 export const revalidate = 60;
@@ -72,6 +73,7 @@ export default async function Home() {
       <ScrollProgress />
       <FloatingFx />
       <Nav />
+      <SideDock />
       <HeroScene
         bigWord={profile.displayHighlight}
         fullName={profile.fullName}

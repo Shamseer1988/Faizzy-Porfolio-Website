@@ -52,14 +52,14 @@ export default function CinematicBg() {
     if (!ctx) return;
 
     const rnd = mulberry32(20250710);
-    const blobs: Blob[] = Array.from({ length: 8 }, (_, i) => ({
+    const blobs: Blob[] = Array.from({ length: 11 }, (_, i) => ({
       x0: rnd(),
       y0: rnd(),
-      r: 0.28 + rnd() * 0.3,
+      r: 0.32 + rnd() * 0.34,
       color: i % 5,
-      speed: 0.05 + rnd() * 0.08,
+      speed: 0.08 + rnd() * 0.12,
       phase: rnd() * Math.PI * 2,
-      depth: 0.03 + rnd() * 0.1,
+      depth: 0.06 + rnd() * 0.18,
     }));
 
     let w = 0;
@@ -106,7 +106,7 @@ export default function CinematicBg() {
       lastY = y;
 
       const palette = dark ? DARK_PALETTE : LIGHT_PALETTE;
-      const baseAlpha = dark ? 0.085 : 0.11;
+      const baseAlpha = dark ? 0.17 : 0.19;
       const t = time / 1000;
 
       ctx!.clearRect(0, 0, w, h);
@@ -115,7 +115,7 @@ export default function CinematicBg() {
       const minDim = Math.min(w, h);
       for (const b of blobs) {
         const drift = t * b.speed;
-        const bx = (b.x0 + Math.sin(drift + b.phase) * 0.08) * w;
+        const bx = (b.x0 + Math.sin(drift + b.phase) * 0.12) * w;
         // parallax: each blob slides at its own depth; wraps around
         const span = h + minDim;
         let by = ((b.y0 * span - y * b.depth) % span) + Math.cos(drift * 0.8 + b.phase) * 0.05 * h;
@@ -123,7 +123,7 @@ export default function CinematicBg() {
         const r = b.r * minDim * (1 + Math.sin(drift * 1.4 + b.phase) * 0.08);
         const [cr, cg, cb] = palette[b.color];
         // scrolling makes the light breathe brighter — the "video" feel
-        const alpha = baseAlpha + scrollEnergy * 0.0035;
+        const alpha = Math.min(0.34, baseAlpha + scrollEnergy * 0.009);
         const grad = ctx!.createRadialGradient(bx, by, 0, bx, by, r);
         grad.addColorStop(0, `rgba(${cr},${cg},${cb},${alpha})`);
         grad.addColorStop(0.55, `rgba(${cr},${cg},${cb},${alpha * 0.4})`);
