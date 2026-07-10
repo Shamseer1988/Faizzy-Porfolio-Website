@@ -12,6 +12,8 @@ import ScrollStory, { type StoryChapter } from "@/components/ScrollStory";
 import Timeline from "@/components/Timeline";
 import FloatingFx from "@/components/FloatingFx";
 import SideDock from "@/components/SideDock";
+import ThrowbackGallery from "@/components/ThrowbackGallery";
+import VideoGrid from "@/components/VideoGrid";
 import { getSiteContent } from "@/lib/content";
 
 export const revalidate = 60;
@@ -60,7 +62,7 @@ const storyChapters: StoryChapter[] = [
 ];
 
 export default async function Home() {
-  const { profile, skills, hobbies, projects, family, gallery, milestones } =
+  const { profile, skills, hobbies, projects, family, gallery, milestones, videos } =
     await getSiteContent();
 
   // Hero floating cards: his portrait + gallery photos (both editable from
@@ -225,29 +227,14 @@ export default async function Home() {
           </p>
           <h2 className="sec-title rv">Faizzy World 🎬</h2>
           <p className="sec-sub rv">
-            My own YouTube channel — next season powered by AI-generated videos.
+            My own YouTube channel — check out my latest videos below or{" "}
+            <a href={profile.youtubeUrl} target="_blank" rel="noopener noreferrer" style={{ color: "var(--cyan)", textDecoration: "underline" }}>
+              visit my channel
+            </a>.
           </p>
-          <div className="yt-band rv">
-            <div>
-              <span className="yt-logo">▶</span>
-              <h3>youtube.com/{profile.youtubeHandle}</h3>
-              <p>
-                Robots, smart-home tours, football tricks and experiments — created by me,
-                supercharged with AI video tools.
-              </p>
-              <div className="yt-progress">
-                <span>Next upload</span>
-                <div className="bar">
-                  <i />
-                </div>
-                <span>rendering…</span>
-              </div>
-            </div>
-            <a className="btn btn-yt" href={profile.youtubeUrl} target="_blank" rel="noopener">
-              ▶ Visit my channel
-            </a>
-          </div>
+          <VideoGrid videos={videos} />
         </section>
+
 
         {/* FAMILY */}
         <section id="family">
@@ -281,22 +268,15 @@ export default async function Home() {
           </div>
         </section>
 
-        {/* GALLERY */}
+        {/* GALLERY — 3D rotating carousel with filters & lightbox */}
         <section id="gallery">
           <span className="sec-mark" aria-hidden="true">2014</span>
           <p className="sec-eyebrow rv">{"// throwback"}</p>
           <h2 className="sec-title rv">Loading… since 2014</h2>
-          <p className="sec-sub rv">Proof that the need for speed started early.</p>
-          <div className="gal">
-            {gallery.map((g, i) => (
-              <Parallax amount={i % 2 ? 46 : 22} key={g.id}>
-                <figure className={`pola gold-ring rv${i % 2 ? " d1" : ""}`}>
-                  <Image src={g.src} alt={g.caption} width={800} height={1000} />
-                  <figcaption>{g.caption}</figcaption>
-                </figure>
-              </Parallax>
-            ))}
-          </div>
+          <p className="sec-sub rv">
+            Drag, spin &amp; click — a 3D archive of the journey so far.
+          </p>
+          <ThrowbackGallery items={gallery} />
         </section>
 
         {/* CONTACT */}

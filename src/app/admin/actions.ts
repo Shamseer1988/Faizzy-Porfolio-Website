@@ -219,3 +219,33 @@ export async function deleteMessageAction(formData: FormData) {
   await prisma.message.delete({ where: { id: num(formData, "id") } });
   revalidatePath("/admin/messages");
 }
+
+/* ---------- videos ---------- */
+
+export async function saveVideoAction(formData: FormData) {
+  const id = num(formData, "id", 0);
+  const data = {
+    youtubeId: str(formData, "youtubeId"),
+    title: str(formData, "title"),
+    description: str(formData, "description"),
+    thumbnail: str(formData, "thumbnail"),
+    category: str(formData, "category", "video"),
+    duration: str(formData, "duration", "10:00"),
+    timeAgo: str(formData, "timeAgo", "1 week ago"),
+    sticker: str(formData, "sticker", "⭐"),
+    featured: formData.get("featured") === "on",
+    order: num(formData, "order"),
+  };
+  if (!data.youtubeId || !data.title) return;
+  if (id) await prisma.video.update({ where: { id }, data });
+  else await prisma.video.create({ data });
+  refreshPublic();
+  revalidatePath("/admin/videos");
+}
+
+export async function deleteVideoAction(formData: FormData) {
+  await prisma.video.delete({ where: { id: num(formData, "id") } });
+  refreshPublic();
+  revalidatePath("/admin/videos");
+}
+

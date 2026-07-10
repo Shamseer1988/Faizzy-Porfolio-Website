@@ -83,3 +83,18 @@ model Milestone {
   image String?
   order Int     @default(0)
 }
+
+model Video {
+  id          Int     @id @default(autoincrement())
+  youtubeId   String  // e.g. "dQw4w9WgXcQ"
+  title       String
+  description String  @default("")
+  thumbnail   String  @default("") // custom thumb override; empty = use YouTube default
+  category    String  @default("video") // e.g. "robots" | "smart-home" | "tricks"
+  duration    String  @default("10:00")
+  timeAgo     String  @default("1 week ago")
+  sticker     String  @default("⭐")
+  featured    Boolean @default(true)
+  order       Int     @default(0)
+}
+

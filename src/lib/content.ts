@@ -7,7 +7,7 @@ import { defaultContent, type SiteContent } from "./defaults";
 export async function getSiteContent(): Promise<SiteContent> {
   if (!hasDatabase()) return defaultContent;
   try {
-    const [profile, skills, hobbies, projects, family, gallery, milestones] =
+    const [profile, skills, hobbies, projects, family, gallery, milestones, videos] =
       await Promise.all([
         prisma.profile.findUnique({ where: { id: 1 } }),
         prisma.skill.findMany({ orderBy: { order: "asc" } }),
@@ -16,6 +16,11 @@ export async function getSiteContent(): Promise<SiteContent> {
         prisma.familyMember.findMany({ orderBy: { order: "asc" } }),
         prisma.galleryItem.findMany({ orderBy: { order: "asc" } }),
         prisma.milestone.findMany({ orderBy: { order: "asc" } }),
+        prisma.video.findMany({
+          where: { featured: true },
+          orderBy: { order: "asc" },
+          take: 4,
+        }),
       ]);
     if (!profile) return defaultContent;
     return {
@@ -26,8 +31,10 @@ export async function getSiteContent(): Promise<SiteContent> {
       family: family.length ? family : defaultContent.family,
       gallery: gallery.length ? gallery : defaultContent.gallery,
       milestones: milestones.length ? milestones : defaultContent.milestones,
+      videos: videos.length ? videos : defaultContent.videos,
     };
   } catch {
     return defaultContent;
   }
 }
+

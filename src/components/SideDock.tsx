@@ -14,8 +14,8 @@ const ITEMS = [
   { id: "contact", icon: "📬", label: "Contact" },
 ];
 
-// Cute floating dock: section bubbles on the right edge (bottom edge on
-// phones) with hover labels and a scrollspy highlight.
+// Floating dock: hidden on hero, replaced by a scroll hint.
+// On all other sections it becomes the full icon rail.
 export default function SideDock() {
   const [active, setActive] = useState("top");
 
@@ -35,9 +35,19 @@ export default function SideDock() {
     return () => io.disconnect();
   }, []);
 
+  // On the hero, show a scroll-down hint in the same position
+  if (active === "top") {
+    return (
+      <a href="#story" className="dock-scroll-hint" aria-label="Scroll to next section">
+        <span className="dock-scroll-label">SCROLL</span>
+        <i className="dock-scroll-arrow">↓</i>
+      </a>
+    );
+  }
+
   return (
     <nav className="dock" aria-label="Section navigation">
-      {ITEMS.map((item) => (
+      {ITEMS.filter((i) => i.id !== "top").map((item) => (
         <a
           key={item.id}
           href={`#${item.id}`}

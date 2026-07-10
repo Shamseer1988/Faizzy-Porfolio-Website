@@ -42,6 +42,20 @@ export type MilestoneContent = {
   image: string | null;
   order: number;
 };
+export type VideoContent = {
+  id: number;
+  youtubeId: string;
+  title: string;
+  description: string;
+  thumbnail: string;
+  category: string;
+  duration: string;
+  timeAgo: string;
+  sticker: string;
+  featured: boolean;
+  order: number;
+};
+
 
 export type SiteContent = {
   profile: ProfileContent;
@@ -51,6 +65,7 @@ export type SiteContent = {
   family: FamilyMemberContent[];
   gallery: GalleryItemContent[];
   milestones: MilestoneContent[];
+  videos: VideoContent[];
 };
 
 export const defaultContent: SiteContent = {
@@ -241,4 +256,85 @@ export const defaultContent: SiteContent = {
       order: 8,
     },
   ],
+  videos: [
+    {
+      id: 1,
+      youtubeId: "dQw4w9WgXcQ",
+      title: "Epic Football Match",
+      description: "My best goals and highlights from this season's local junior tournament.",
+      thumbnail: "",
+      category: "Football",
+      duration: "12:45",
+      timeAgo: "2 days ago",
+      sticker: "🏆",
+      featured: true,
+      order: 1,
+    },
+    {
+      id: 2,
+      youtubeId: "dQw4w9WgXcQ",
+      title: "Building My Robot",
+      description: "Step-by-step assembly of my custom Arduino obstacle avoiding robot buddy.",
+      thumbnail: "",
+      category: "Robots",
+      duration: "8:32",
+      timeAgo: "1 week ago",
+      sticker: "🤖",
+      featured: true,
+      order: 2,
+    },
+    {
+      id: 3,
+      youtubeId: "dQw4w9WgXcQ",
+      title: "Swimming Day",
+      description: "Beating my personal best record in the 50m pool during summer camp.",
+      thumbnail: "",
+      category: "Games",
+      duration: "5:11",
+      timeAgo: "2 weeks ago",
+      sticker: "🌊",
+      featured: true,
+      order: 3,
+    },
+    {
+      id: 4,
+      youtubeId: "dQw4w9WgXcQ",
+      title: "Cycle Adventure",
+      description: "Exploring the offroad trails and hills around Korapra on two wheels.",
+      thumbnail: "",
+      category: "Adventure",
+      duration: "5:20",
+      timeAgo: "3 weeks ago",
+      sticker: "🚲",
+      featured: true,
+      order: 4,
+    },
+    {
+      id: 5,
+      youtubeId: "dQw4w9WgXcQ",
+      title: "Nature Photography",
+      description: "A compilation of macro insect photos and sunsets captured near our house.",
+      thumbnail: "",
+      category: "Art",
+      duration: "7:15",
+      timeAgo: "1 month ago",
+      sticker: "🍃",
+      featured: true,
+      order: 5,
+    },
+    {
+      id: 6,
+      youtubeId: "dQw4w9WgXcQ",
+      title: "Family Trip Vlog",
+      description: "Our weekend getaway to the beach and amusement park with Baba and siblings.",
+      thumbnail: "",
+      category: "Family",
+      duration: "10:18",
+      timeAgo: "3 month ago",
+      sticker: "💖",
+      featured: true,
+      order: 6,
+    },
+  ],
 };
+

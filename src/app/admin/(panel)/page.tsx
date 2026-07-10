@@ -16,17 +16,18 @@ export default async function AdminDashboard() {
     );
   }
 
-  let counts: { skills: number; projects: number; family: number; gallery: number; messages: number; unread: number };
+  let counts: { skills: number; projects: number; family: number; gallery: number; messages: number; unread: number; videos: number };
   try {
-    const [skills, projects, family, gallery, messages, unread] = await Promise.all([
+    const [skills, projects, family, gallery, messages, unread, videos] = await Promise.all([
       prisma.skill.count(),
       prisma.project.count(),
       prisma.familyMember.count(),
       prisma.galleryItem.count(),
       prisma.message.count(),
       prisma.message.count({ where: { read: false } }),
+      prisma.video.count(),
     ]);
-    counts = { skills, projects, family, gallery, messages, unread };
+    counts = { skills, projects, family, gallery, messages, unread, videos };
   } catch {
     return (
       <div className="card">
@@ -45,6 +46,7 @@ export default async function AdminDashboard() {
     { label: "Projects", value: counts.projects, href: "/admin/projects" },
     { label: "Family members", value: counts.family, href: "/admin/family" },
     { label: "Gallery photos", value: counts.gallery, href: "/admin/family" },
+    { label: "YouTube Videos", value: counts.videos, href: "/admin/videos" },
     { label: "Messages", value: counts.messages, href: "/admin/messages" },
     { label: "Unread messages", value: counts.unread, href: "/admin/messages" },
   ];

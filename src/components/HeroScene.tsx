@@ -40,9 +40,9 @@ function mulberry32(seed: number) {
 
 const CARD_SLOTS = [
   { top: "22%", right: "4%", w: 300, rot: 4, depth: 34, z: 4, float: 0 },
-  { top: "9%", left: "2%", w: 195, rot: -7, depth: 20, z: 3, float: 1.1 },
+  { top: "16%", left: "2%", w: 195, rot: -7, depth: 20, z: 3, float: 1.1 },
   { top: "52%", right: "27%", w: 165, rot: 6, depth: 14, z: 1, float: 2.2 },
-  { top: "11%", left: "26%", w: 150, rot: -4, depth: 26, z: 1, float: 0.6 },
+  { top: "14%", left: "26%", w: 150, rot: -4, depth: 26, z: 1, float: 0.6 },
 ];
 
 function Layer({

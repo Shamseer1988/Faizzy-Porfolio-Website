@@ -13,6 +13,7 @@ export default function AdminLayout({ children }: { children: React.ReactNode })
         <Link href="/admin/projects">🚀 Projects</Link>
         <Link href="/admin/timeline">🕰 Timeline</Link>
         <Link href="/admin/family">👨‍👩‍👧‍👦 Family &amp; Gallery</Link>
+        <Link href="/admin/videos">🎬 Videos</Link>
         <Link href="/admin/messages">📬 Messages</Link>
         <Link href="/" target="_blank">
           🌐 View site
