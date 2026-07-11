@@ -19,7 +19,7 @@ export async function getSiteContent(): Promise<SiteContent> {
         prisma.video.findMany({
           where: { featured: true },
           orderBy: { order: "asc" },
-          take: 4,
+          take: 5,
         }),
       ]);
     if (!profile) return defaultContent;

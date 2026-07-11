@@ -20,7 +20,7 @@ export default async function AdminVideos() {
         <h2 style={{ marginBottom: 6 }}>🎬 YouTube Videos</h2>
         <p style={{ margin: 0 }}>
           Manage videos shown on the homepage in the &quot;Creator Zone&quot;.
-          You can feature up to 4 videos. Provide the YouTube 11-character video ID
+          You can feature up to 5 videos (1 in the center, 4 orbiting). Provide the YouTube 11-character video ID
           (e.g., for <code>https://www.youtube.com/watch?v=dQw4w9WgXcQ</code>, the ID is <code>dQw4w9WgXcQ</code>) —
           or leave it blank to show a &quot;coming soon&quot; card until the real video is uploaded.
         </p>
