@@ -145,12 +145,6 @@ export default async function Home() {
         {/* LIFE TIMELINE — dynamic milestones from the admin backend */}
         <section id="journey">
           <span className="sec-mark" aria-hidden="true">JOURNEY</span>
-          <p className="sec-eyebrow rv">{"// my journey"}</p>
-          <h2 className="sec-title rv">Born to build</h2>
-          <p className="sec-sub rv">
-            Keep scrolling — the deck flips through the years, from first steps to first
-            automations. (Baba adds new chapters from the admin panel as they happen.)
-          </p>
           <Timeline milestones={milestones} />
         </section>
 
