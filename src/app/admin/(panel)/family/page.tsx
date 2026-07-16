@@ -1,4 +1,5 @@
-import { prisma } from "@/lib/db";
+import { getDb } from "@/lib/db";
+import MediaUpload from "@/components/admin/MediaUpload";
 import {
   saveFamilyAction,
   deleteFamilyAction,
@@ -17,10 +18,13 @@ const inputStyle: React.CSSProperties = {
 };
 
 export default async function AdminFamily() {
-  const [family, gallery] = await Promise.all([
-    prisma.familyMember.findMany({ orderBy: { order: "asc" } }),
-    prisma.galleryItem.findMany({ orderBy: { order: "asc" } }),
-  ]);
+  const prisma = await getDb();
+  const [family, gallery] = prisma
+    ? await Promise.all([
+        prisma.familyMember.findMany({ orderBy: { order: "asc" } }),
+        prisma.galleryItem.findMany({ orderBy: { order: "asc" } }),
+      ])
+    : [[], []];
 
   return (
     <>
@@ -65,24 +69,17 @@ export default async function AdminFamily() {
       <div className="card">
         <h2 style={{ marginBottom: 6 }}>🖼 Gallery</h2>
         <p style={{ marginBottom: 14 }}>
-          Photos live in <code>public/images/</code>. Add the file there first, then list its
-          path here (e.g. <code>/images/new-photo.jpg</code>).
+          Use <b>⬆ Upload</b> to send a photo straight to Cloudflare R2, or paste an
+          existing image URL.
         </p>
         {[...gallery, null].map((g) => (
           <form
             key={g?.id ?? "new"}
             action={saveGalleryAction}
-            style={{ display: "flex", gap: 8, padding: "6px 0", alignItems: "center", flexWrap: "wrap" }}
+            style={{ display: "flex", gap: 8, padding: "6px 0", alignItems: "flex-start", flexWrap: "wrap" }}
           >
             <input type="hidden" name="id" value={g?.id ?? ""} />
-            <input
-              name="src"
-              defaultValue={g?.src ?? ""}
-              placeholder="/images/photo.jpg"
-              required
-              style={{ ...inputStyle, flex: "1 1 200px" }}
-              aria-label="Image path"
-            />
+            <MediaUpload name="src" defaultValue={g?.src ?? ""} accept="image/*" />
             <input
               name="caption"
               defaultValue={g?.caption ?? ""}

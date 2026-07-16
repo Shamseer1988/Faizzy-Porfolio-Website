@@ -13,6 +13,10 @@ const eslintConfig = defineConfig([
     "build/**",
     "next-env.d.ts",
     "scratch/**",
+    // Generated Prisma clients + Cloudflare build output.
+    "src/generated/**",
+    ".open-next/**",
+    ".wrangler/**",
   ]),
   {
     rules: {

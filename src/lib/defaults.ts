@@ -155,7 +155,7 @@ export const defaultContent: SiteContent = {
       icon: "📱",
       tag: "Learning",
       accent: "cyan",
-      tools: ["Next.js", "TypeScript", "PostgreSQL"],
+      tools: ["Next.js", "TypeScript", "Cloudflare"],
       order: 4,
       visible: true,
     },

@@ -1,5 +1,5 @@
 import { NextResponse } from "next/server";
-import { prisma, hasDatabase } from "@/lib/db";
+import { getDb } from "@/lib/db";
 
 export async function POST(request: Request) {
   let payload: { name?: unknown; email?: unknown; message?: unknown };
@@ -26,7 +26,8 @@ export async function POST(request: Request) {
     return NextResponse.json({ error: "Please enter a valid email address." }, { status: 400 });
   }
 
-  if (!hasDatabase()) {
+  const prisma = await getDb();
+  if (!prisma) {
     return NextResponse.json(
       { error: "The inbox is offline in this preview. Try the live site!" },
       { status: 503 },
@@ -36,7 +37,8 @@ export async function POST(request: Request) {
   try {
     await prisma.message.create({ data: { name, email, body: message } });
     return NextResponse.json({ ok: true });
-  } catch {
+  } catch (e) {
+    console.error("contact create failed:", e);
     return NextResponse.json(
       { error: "Could not save your message right now. Please try again later." },
       { status: 503 },

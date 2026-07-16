@@ -1,10 +1,13 @@
-import { prisma } from "@/lib/db";
+import { getDb } from "@/lib/db";
 import { toggleMessageReadAction, deleteMessageAction } from "../../actions";
 
 export const dynamic = "force-dynamic";
 
 export default async function AdminMessages() {
-  const messages = await prisma.message.findMany({ orderBy: { createdAt: "desc" } });
+  const prisma = await getDb();
+  const messages = prisma
+    ? await prisma.message.findMany({ orderBy: { createdAt: "desc" } })
+    : [];
 
   return (
     <div className="card">

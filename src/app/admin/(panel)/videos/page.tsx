@@ -1,4 +1,5 @@
-import { prisma } from "@/lib/db";
+import { getDb } from "@/lib/db";
+import MediaUpload from "@/components/admin/MediaUpload";
 import { saveVideoAction, deleteVideoAction } from "../../actions";
 
 export const dynamic = "force-dynamic";
@@ -12,7 +13,8 @@ const inputStyle: React.CSSProperties = {
 };
 
 export default async function AdminVideos() {
-  const videos = await prisma.video.findMany({ orderBy: { order: "asc" } });
+  const prisma = await getDb();
+  const videos = prisma ? await prisma.video.findMany({ orderBy: { order: "asc" } }) : [];
 
   return (
     <>
@@ -115,15 +117,12 @@ export default async function AdminVideos() {
           </div>
 
           <div style={{ display: "grid", gridTemplateColumns: "1fr auto", gap: 20, alignItems: "center", marginBottom: 16 }}>
-            <div className="field">
-              <label>Custom Thumbnail URL (optional — leave blank for YouTube default)</label>
-              <input
-                name="thumbnail"
-                defaultValue={v?.thumbnail ?? ""}
-                placeholder="/images/custom-thumb.jpg or external url"
-                style={inputStyle}
-              />
-            </div>
+            <MediaUpload
+              name="thumbnail"
+              defaultValue={v?.thumbnail ?? ""}
+              label="Custom thumbnail (optional — blank uses the YouTube thumbnail)"
+              accept="image/*"
+            />
             <div style={{ display: "flex", alignItems: "center", gap: 8, marginTop: 16 }}>
               <input
                 type="checkbox"

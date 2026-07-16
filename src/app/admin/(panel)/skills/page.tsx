@@ -1,4 +1,4 @@
-import { prisma } from "@/lib/db";
+import { getDb } from "@/lib/db";
 import {
   saveSkillAction,
   deleteSkillAction,
@@ -9,10 +9,13 @@ import {
 export const dynamic = "force-dynamic";
 
 export default async function AdminSkills() {
-  const [skills, hobbies] = await Promise.all([
-    prisma.skill.findMany({ orderBy: { order: "asc" } }),
-    prisma.hobby.findMany({ orderBy: { order: "asc" } }),
-  ]);
+  const prisma = await getDb();
+  const [skills, hobbies] = prisma
+    ? await Promise.all([
+        prisma.skill.findMany({ orderBy: { order: "asc" } }),
+        prisma.hobby.findMany({ orderBy: { order: "asc" } }),
+      ])
+    : [[], []];
 
   return (
     <>

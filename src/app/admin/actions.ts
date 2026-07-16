@@ -2,7 +2,7 @@
 
 import { revalidatePath } from "next/cache";
 import { redirect } from "next/navigation";
-import { prisma } from "@/lib/db";
+import { getDb } from "@/lib/db";
 import { checkCredentials, createSession, destroySession } from "@/lib/auth";
 
 function str(form: FormData, key: string, fallback = ""): string {
@@ -40,6 +40,8 @@ export async function logoutAction() {
 /* ---------- profile ---------- */
 
 export async function updateProfileAction(formData: FormData) {
+  const prisma = await getDb();
+  if (!prisma) return;
   const roles = str(formData, "roles")
     .split("\n")
     .map((r) => r.trim())
@@ -51,7 +53,7 @@ export async function updateProfileAction(formData: FormData) {
       displayFirst: str(formData, "displayFirst"),
       displayHighlight: str(formData, "displayHighlight"),
       displayLast: str(formData, "displayLast"),
-      roles,
+      roles: JSON.stringify(roles),
       bio: str(formData, "bio"),
       age: num(formData, "age", 11),
       className: str(formData, "className"),
@@ -70,6 +72,8 @@ export async function updateProfileAction(formData: FormData) {
 /* ---------- skills & hobbies ---------- */
 
 export async function saveSkillAction(formData: FormData) {
+  const prisma = await getDb();
+  if (!prisma) return;
   const id = num(formData, "id", 0);
   const data = {
     name: str(formData, "name"),
@@ -84,12 +88,16 @@ export async function saveSkillAction(formData: FormData) {
 }
 
 export async function deleteSkillAction(formData: FormData) {
+  const prisma = await getDb();
+  if (!prisma) return;
   await prisma.skill.delete({ where: { id: num(formData, "id") } });
   refreshPublic();
   revalidatePath("/admin/skills");
 }
 
 export async function saveHobbyAction(formData: FormData) {
+  const prisma = await getDb();
+  if (!prisma) return;
   const id = num(formData, "id", 0);
   const data = { label: str(formData, "label"), order: num(formData, "order") };
   if (!data.label) return;
@@ -100,6 +108,8 @@ export async function saveHobbyAction(formData: FormData) {
 }
 
 export async function deleteHobbyAction(formData: FormData) {
+  const prisma = await getDb();
+  if (!prisma) return;
   await prisma.hobby.delete({ where: { id: num(formData, "id") } });
   refreshPublic();
   revalidatePath("/admin/skills");
@@ -108,17 +118,20 @@ export async function deleteHobbyAction(formData: FormData) {
 /* ---------- projects ---------- */
 
 export async function saveProjectAction(formData: FormData) {
+  const prisma = await getDb();
+  if (!prisma) return;
   const id = num(formData, "id", 0);
+  const tools = str(formData, "tools")
+    .split(",")
+    .map((t) => t.trim())
+    .filter(Boolean);
   const data = {
     title: str(formData, "title"),
     description: str(formData, "description"),
     icon: str(formData, "icon", "💡"),
     tag: str(formData, "tag"),
     accent: str(formData, "accent", "cyan"),
-    tools: str(formData, "tools")
-      .split(",")
-      .map((t) => t.trim())
-      .filter(Boolean),
+    tools: JSON.stringify(tools),
     order: num(formData, "order"),
     visible: formData.get("visible") === "on",
   };
@@ -130,6 +143,8 @@ export async function saveProjectAction(formData: FormData) {
 }
 
 export async function deleteProjectAction(formData: FormData) {
+  const prisma = await getDb();
+  if (!prisma) return;
   await prisma.project.delete({ where: { id: num(formData, "id") } });
   refreshPublic();
   revalidatePath("/admin/projects");
@@ -138,6 +153,8 @@ export async function deleteProjectAction(formData: FormData) {
 /* ---------- family & gallery ---------- */
 
 export async function saveFamilyAction(formData: FormData) {
+  const prisma = await getDb();
+  if (!prisma) return;
   const id = num(formData, "id", 0);
   const data = {
     name: str(formData, "name"),
@@ -153,12 +170,16 @@ export async function saveFamilyAction(formData: FormData) {
 }
 
 export async function deleteFamilyAction(formData: FormData) {
+  const prisma = await getDb();
+  if (!prisma) return;
   await prisma.familyMember.delete({ where: { id: num(formData, "id") } });
   refreshPublic();
   revalidatePath("/admin/family");
 }
 
 export async function saveGalleryAction(formData: FormData) {
+  const prisma = await getDb();
+  if (!prisma) return;
   const id = num(formData, "id", 0);
   const data = {
     src: str(formData, "src"),
@@ -173,6 +194,8 @@ export async function saveGalleryAction(formData: FormData) {
 }
 
 export async function deleteGalleryAction(formData: FormData) {
+  const prisma = await getDb();
+  if (!prisma) return;
   await prisma.galleryItem.delete({ where: { id: num(formData, "id") } });
   refreshPublic();
   revalidatePath("/admin/family");
@@ -181,6 +204,8 @@ export async function deleteGalleryAction(formData: FormData) {
 /* ---------- timeline milestones ---------- */
 
 export async function saveMilestoneAction(formData: FormData) {
+  const prisma = await getDb();
+  if (!prisma) return;
   const id = num(formData, "id", 0);
   const image = str(formData, "image");
   const data = {
@@ -199,6 +224,8 @@ export async function saveMilestoneAction(formData: FormData) {
 }
 
 export async function deleteMilestoneAction(formData: FormData) {
+  const prisma = await getDb();
+  if (!prisma) return;
   await prisma.milestone.delete({ where: { id: num(formData, "id") } });
   refreshPublic();
   revalidatePath("/admin/timeline");
@@ -207,6 +234,8 @@ export async function deleteMilestoneAction(formData: FormData) {
 /* ---------- messages ---------- */
 
 export async function toggleMessageReadAction(formData: FormData) {
+  const prisma = await getDb();
+  if (!prisma) return;
   const id = num(formData, "id");
   const msg = await prisma.message.findUnique({ where: { id } });
   if (msg) {
@@ -216,6 +245,8 @@ export async function toggleMessageReadAction(formData: FormData) {
 }
 
 export async function deleteMessageAction(formData: FormData) {
+  const prisma = await getDb();
+  if (!prisma) return;
   await prisma.message.delete({ where: { id: num(formData, "id") } });
   revalidatePath("/admin/messages");
 }
@@ -223,6 +254,8 @@ export async function deleteMessageAction(formData: FormData) {
 /* ---------- videos ---------- */
 
 export async function saveVideoAction(formData: FormData) {
+  const prisma = await getDb();
+  if (!prisma) return;
   const id = num(formData, "id", 0);
   const data = {
     youtubeId: str(formData, "youtubeId"),
@@ -246,8 +279,9 @@ export async function saveVideoAction(formData: FormData) {
 }
 
 export async function deleteVideoAction(formData: FormData) {
+  const prisma = await getDb();
+  if (!prisma) return;
   await prisma.video.delete({ where: { id: num(formData, "id") } });
   refreshPublic();
   revalidatePath("/admin/videos");
 }
-

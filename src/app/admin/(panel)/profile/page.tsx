@@ -1,10 +1,12 @@
-import { prisma } from "@/lib/db";
+import { getDb } from "@/lib/db";
+import { parseList } from "@/lib/serialize";
 import { updateProfileAction } from "../../actions";
 
 export const dynamic = "force-dynamic";
 
 export default async function AdminProfile() {
-  const profile = await prisma.profile.findUnique({ where: { id: 1 } });
+  const prisma = await getDb();
+  const profile = prisma ? await prisma.profile.findUnique({ where: { id: 1 } }) : null;
   if (!profile) {
     return (
       <div className="card">
@@ -39,7 +41,7 @@ export default async function AdminProfile() {
       </div>
       <div className="field">
         <label htmlFor="roles">Rotating roles (one per line)</label>
-        <textarea id="roles" name="roles" defaultValue={profile.roles.join("\n")} />
+        <textarea id="roles" name="roles" defaultValue={parseList(profile.roles).join("\n")} />
       </div>
       <div className="field">
         <label htmlFor="bio">Bio</label>

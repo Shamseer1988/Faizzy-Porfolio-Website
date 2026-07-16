@@ -322,7 +322,7 @@ export default async function Home() {
           © {new Date().getFullYear()} <b>{profile.fullName}</b> · {profile.house}
           <br />
           Built with <span className="heart">❤</span> by Baba &amp; Zohan · Next.js ×
-          TypeScript × PostgreSQL · <a href="/admin">Admin</a>
+          TypeScript × Cloudflare · <a href="/admin">Admin</a>
         </div>
       </footer>
     </>

@@ -1,9 +1,17 @@
 import Link from "next/link";
+import { redirect } from "next/navigation";
+import { isAuthenticated } from "@/lib/auth";
 import { logoutAction } from "../actions";
 
 export const dynamic = "force-dynamic";
 
-export default function AdminLayout({ children }: { children: React.ReactNode }) {
+// Guards every admin panel route. (The /admin/login page lives outside this
+// layout group, so it stays public.) This runs on any runtime, which keeps
+// the app free of Node.js middleware that Cloudflare Workers can't run.
+export default async function AdminLayout({ children }: { children: React.ReactNode }) {
+  if (!(await isAuthenticated())) {
+    redirect("/admin/login");
+  }
   return (
     <div className="admin-shell">
       <aside className="card admin-side">

@@ -1,4 +1,5 @@
-import { prisma } from "@/lib/db";
+import { getDb } from "@/lib/db";
+import MediaUpload from "@/components/admin/MediaUpload";
 import { saveMilestoneAction, deleteMilestoneAction } from "../../actions";
 
 export const dynamic = "force-dynamic";
@@ -12,7 +13,10 @@ const inputStyle: React.CSSProperties = {
 };
 
 export default async function AdminTimeline() {
-  const milestones = await prisma.milestone.findMany({ orderBy: { order: "asc" } });
+  const prisma = await getDb();
+  const milestones = prisma
+    ? await prisma.milestone.findMany({ orderBy: { order: "asc" } })
+    : [];
 
   return (
     <>
@@ -58,15 +62,12 @@ export default async function AdminTimeline() {
             <label>Story</label>
             <textarea name="story" defaultValue={m?.story ?? ""} />
           </div>
-          <div className="field">
-            <label>Photo path (optional)</label>
-            <input
-              name="image"
-              defaultValue={m?.image ?? ""}
-              placeholder="/images/photo.jpg"
-              style={inputStyle}
-            />
-          </div>
+          <MediaUpload
+            name="image"
+            defaultValue={m?.image ?? ""}
+            label="Photo (optional — upload to R2 or paste a URL)"
+            accept="image/*"
+          />
           <div style={{ display: "flex", gap: 10 }}>
             <button className="btn btn-primary btn-sm" type="submit">
               {m ? "💾 Save" : "➕ Add milestone"}

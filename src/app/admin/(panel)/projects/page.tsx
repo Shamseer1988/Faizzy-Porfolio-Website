@@ -1,4 +1,5 @@
-import { prisma } from "@/lib/db";
+import { getDb } from "@/lib/db";
+import { parseList } from "@/lib/serialize";
 import { saveProjectAction, deleteProjectAction } from "../../actions";
 
 export const dynamic = "force-dynamic";
@@ -13,7 +14,8 @@ const inputStyle: React.CSSProperties = {
 };
 
 export default async function AdminProjects() {
-  const projects = await prisma.project.findMany({ orderBy: { order: "asc" } });
+  const prisma = await getDb();
+  const projects = prisma ? await prisma.project.findMany({ orderBy: { order: "asc" } }) : [];
 
   return (
     <>
@@ -44,7 +46,7 @@ export default async function AdminProjects() {
           <div style={{ display: "grid", gridTemplateColumns: "1fr 120px 90px 110px", gap: 12, alignItems: "end" }}>
             <div className="field">
               <label>Tools (comma-separated)</label>
-              <input name="tools" defaultValue={p?.tools.join(", ") ?? ""} style={inputStyle} />
+              <input name="tools" defaultValue={p ? parseList(p.tools).join(", ") : ""} style={inputStyle} />
             </div>
             <div className="field">
               <label>Accent</label>

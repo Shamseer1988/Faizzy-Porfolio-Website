@@ -1,9 +1,26 @@
+// Two generated clients, selected at runtime in src/lib/db.ts:
+//   • client         → Node target (local dev / build / CI, better-sqlite3)
+//   • clientWorkerd   → workerd target; imports the query-compiler WASM as a
+//     static module so it runs on Cloudflare Workers (which forbid runtime
+//     WASM compilation).
 generator client {
-  provider = "prisma-client-js"
+  provider     = "prisma-client"
+  output       = "../src/generated/prisma"
+  moduleFormat = "esm"
+  runtime      = "nodejs"
 }
 
+generator clientWorkerd {
+  provider     = "prisma-client"
+  output       = "../src/generated/prisma-workerd"
+  moduleFormat = "esm"
+  runtime      = "workerd"
+}
+
+// SQLite engine — runs on Cloudflare D1 in production and on a local
+// SQLite file for development (both via Prisma driver adapters).
 datasource db {
-  provider = "postgresql"
+  provider = "sqlite"
 }
 
 model Profile {
@@ -12,7 +29,7 @@ model Profile {
   displayFirst     String
   displayHighlight String
   displayLast      String
-  roles            String[]
+  roles            String   // JSON-encoded string[] (SQLite has no array type)
   bio              String
   age              Int
   className        String
@@ -45,7 +62,7 @@ model Project {
   icon        String
   tag         String
   accent      String   @default("cyan") // cyan | lime | amber
-  tools       String[]
+  tools       String   // JSON-encoded string[] (SQLite has no array type)
   order       Int      @default(0)
   visible     Boolean  @default(true)
 }

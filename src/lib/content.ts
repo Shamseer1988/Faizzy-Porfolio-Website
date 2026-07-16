@@ -1,11 +1,13 @@
-import { prisma, hasDatabase } from "./db";
+import { getDb } from "./db";
 import { defaultContent, type SiteContent } from "./defaults";
+import { parseList } from "./serialize";
 
-// Loads all public site content from PostgreSQL, falling back to the
+// Loads all public site content from the database, falling back to the
 // built-in defaults when no database is configured or reachable, so the
 // site always renders (including static preview builds).
 export async function getSiteContent(): Promise<SiteContent> {
-  if (!hasDatabase()) return defaultContent;
+  const prisma = await getDb();
+  if (!prisma) return defaultContent;
   try {
     const [profile, skills, hobbies, projects, family, gallery, milestones, videos] =
       await Promise.all([
@@ -24,10 +26,12 @@ export async function getSiteContent(): Promise<SiteContent> {
       ]);
     if (!profile) return defaultContent;
     return {
-      profile,
+      profile: { ...profile, roles: parseList(profile.roles) },
       skills: skills.length ? skills : defaultContent.skills,
       hobbies: hobbies.length ? hobbies : defaultContent.hobbies,
-      projects: projects.length ? projects : defaultContent.projects,
+      projects: projects.length
+        ? projects.map((p) => ({ ...p, tools: parseList(p.tools) }))
+        : defaultContent.projects,
       family: family.length ? family : defaultContent.family,
       gallery: gallery.length ? gallery : defaultContent.gallery,
       milestones: milestones.length ? milestones : defaultContent.milestones,
@@ -37,4 +41,3 @@ export async function getSiteContent(): Promise<SiteContent> {
     return defaultContent;
   }
 }
-

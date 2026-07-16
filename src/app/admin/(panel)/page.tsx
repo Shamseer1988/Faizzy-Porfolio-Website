@@ -1,16 +1,17 @@
 import Link from "next/link";
-import { prisma, hasDatabase } from "@/lib/db";
+import { getDb } from "@/lib/db";
 
 export const dynamic = "force-dynamic";
 
 export default async function AdminDashboard() {
-  if (!hasDatabase()) {
+  const prisma = await getDb();
+  if (!prisma) {
     return (
       <div className="card">
         <h2>No database configured</h2>
         <p>
-          Set <code>DATABASE_URL</code> in <code>.env</code>, then run{" "}
-          <code>npm run db:setup</code> to create and seed the tables.
+          Set <code>DATABASE_URL</code> in <code>.env</code> (or bind Cloudflare D1),
+          then run <code>npm run db:setup</code> to create and seed the tables.
         </p>
       </div>
     );
@@ -34,8 +35,8 @@ export default async function AdminDashboard() {
         <h2>Database unreachable</h2>
         <p>
           The site keeps working with its built-in content, but editing needs the
-          database. Check that PostgreSQL is running and <code>DATABASE_URL</code> is
-          correct, then run <code>npm run db:setup</code>.
+          database. Locally, run <code>npm run db:setup</code>; on Cloudflare, check
+          the D1 binding and that migrations have been applied.
         </p>
       </div>
     );

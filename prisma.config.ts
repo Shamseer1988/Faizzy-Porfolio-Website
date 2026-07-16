@@ -7,7 +7,8 @@ export default defineConfig({
     seed: "tsx prisma/seed.ts",
   },
   datasource: {
-    // Fallback keeps `prisma generate` working when no database is configured.
-    url: process.env.DATABASE_URL ?? "postgresql://localhost:5432/placeholder",
+    // Local SQLite file for `prisma db push` / `prisma migrate` during
+    // development. Production uses Cloudflare D1 (see the deployment docs).
+    url: process.env.DATABASE_URL ?? "file:./prisma/dev.db",
   },
 });
