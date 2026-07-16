@@ -1,0 +1,117 @@
+// Two generated clients, selected at runtime in src/lib/db.ts:
+//   • client         → Node target (local dev / build / CI, better-sqlite3)
+//   • clientWorkerd   → workerd target; imports the query-compiler WASM as a
+//     static module so it runs on Cloudflare Workers (which forbid runtime
+//     WASM compilation).
+generator client {
+  provider     = "prisma-client"
+  output       = "../src/generated/prisma"
+  moduleFormat = "esm"
+  runtime      = "nodejs"
+}
+
+generator clientWorkerd {
+  provider     = "prisma-client"
+  output       = "../src/generated/prisma-workerd"
+  moduleFormat = "esm"
+  runtime      = "workerd"
+}
+
+// SQLite engine — runs on Cloudflare D1 in production and on a local
+// SQLite file for development (both via Prisma driver adapters).
+datasource db {
+  provider = "sqlite"
+}
+
+model Profile {
+  id               Int      @id @default(1)
+  fullName         String
+  displayFirst     String
+  displayHighlight String
+  displayLast      String
+  roles            String   // JSON-encoded string[] (SQLite has no array type)
+  bio              String
+  age              Int
+  className        String
+  school           String
+  house            String
+  youtubeUrl       String
+  youtubeHandle    String
+  statusTag        String
+  projectsCount    Int
+  updatedAt        DateTime @updatedAt
+}
+
+model Skill {
+  id      Int    @id @default(autoincrement())
+  name    String
+  percent Int
+  order   Int    @default(0)
+}
+
+model Hobby {
+  id    Int    @id @default(autoincrement())
+  label String
+  order Int    @default(0)
+}
+
+model Project {
+  id          Int      @id @default(autoincrement())
+  title       String
+  description String
+  icon        String
+  tag         String
+  accent      String   @default("cyan") // cyan | lime | amber
+  tools       String   // JSON-encoded string[] (SQLite has no array type)
+  order       Int      @default(0)
+  visible     Boolean  @default(true)
+}
+
+model FamilyMember {
+  id       Int    @id @default(autoincrement())
+  name     String
+  relation String
+  emoji    String
+  order    Int    @default(0)
+}
+
+model GalleryItem {
+  id      Int    @id @default(autoincrement())
+  src     String
+  caption String
+  order   Int    @default(0)
+}
+
+model Message {
+  id        Int      @id @default(autoincrement())
+  name      String
+  email     String
+  body      String
+  read      Boolean  @default(false)
+  createdAt DateTime @default(now())
+}
+
+model Milestone {
+  id    Int     @id @default(autoincrement())
+  year  String
+  title String
+  story String
+  icon  String  @default("⭐")
+  image String?
+  order Int     @default(0)
+}
+
+model Video {
+  id          Int     @id @default(autoincrement())
+  youtubeId   String  // e.g. "dQw4w9WgXcQ"
+  title       String
+  description String  @default("")
+  thumbnail   String  @default("") // custom thumb override; empty = use YouTube default
+  category    String  @default("video") // e.g. "robots" | "smart-home" | "tricks"
+  duration    String  @default("10:00")
+  timeAgo     String  @default("1 week ago")
+  sticker     String  @default("⭐")
+  featured    Boolean @default(true)
+  order       Int     @default(0)
+}
+
