@@ -14,6 +14,21 @@ const nextConfig: NextConfig = {
         : []),
     ],
   },
+  // Exclude Node.js-only packages from the server bundle — they are only used
+  // during local development and are dynamically imported with try/catch in
+  // src/lib/db.ts, so their absence at runtime on Cloudflare is safe.
+  serverExternalPackages: [
+    "better-sqlite3",
+    "@prisma/adapter-better-sqlite3",
+  ],
+  // Enable WebAssembly support for Prisma's workerd query compiler.
+  webpack: (config) => {
+    config.experiments = {
+      ...config.experiments,
+      asyncWebAssembly: true,
+    };
+    return config;
+  },
 };
 
 export default nextConfig;
