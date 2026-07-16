@@ -8,11 +8,10 @@ adapter for Next.js), with:
 - **faizzyworld.com** — your domain, already on Cloudflare
 
 > **Windows users — read this first.** Building the Worker locally on Windows
-> fails with `EPERM: operation not permitted, symlink` (OpenNext isn't
-> Windows-compatible). **Don't deploy from your Windows laptop.** Instead use
-> **[Part C — GitHub → Cloudflare auto-deploy](#part-c--deploy-from-github-auto-deploy-recommended)**,
-> which builds on Cloudflare's Linux servers on every push. Local *development*
-> (`npm run dev`) works fine on Windows — only the production *build* doesn't.
+> requires **Windows Developer Mode** to be enabled (to avoid `symlink` permission errors).
+> We have included a custom path-fix script (`scripts/fix-wasm-paths.mjs`) that runs
+> automatically during builds to fix mangled paths. You can deploy directly from your
+> Windows laptop using `npm run deploy`, or use **[Part C — GitHub → Cloudflare auto-deploy](#part-c--deploy-from-github-auto-deploy-recommended)**.
 
 ---
 
@@ -21,14 +20,11 @@ adapter for Next.js), with:
 | Piece            | Local development                         | Production (Cloudflare)             |
 | ---------------- | ----------------------------------------- | ----------------------------------- |
 | Database         | SQLite file **or** local D1 emulator      | D1 binding `DB`                     |
-| Prisma client    | `src/generated/prisma` (Node)             | `src/generated/prisma-workerd`      |
+| Database Driver  | `better-sqlite3`                          | D1 Database Binding                 |
 | Media storage    | local R2 emulator                         | R2 binding `MEDIA`                  |
-| Deploy           | — (don't build on Windows)                | Cloudflare builds from GitHub       |
+| Deploy           | `npm run deploy` (requires Developer Mode)| Cloudflare builds from GitHub       |
 
-`src/lib/db.ts` picks the database automatically: a `file:` `DATABASE_URL`
-uses a local SQLite file; otherwise it uses the D1 binding. If neither is
-reachable the site still renders using the built-in `defaultContent`
-(**graceful fallback** — the site never goes down).
+`src/lib/db.ts` contains a lightweight custom database wrapper that mimics the required Prisma CRUD client. It resolves the database automatically: a `file:` `DATABASE_URL` uses a local SQLite file (via `better-sqlite3`); otherwise it uses the D1 binding. This completely removes the heavy Prisma Client engine and its WASM query compiler from the production Worker, keeping your gzipped bundle under the Cloudflare Workers Free limit (3 MiB). If neither database is reachable, the site still renders using the built-in `defaultContent` (**graceful fallback**).
 
 ---
 
@@ -174,16 +170,15 @@ automatically. No local build needed, ever.
 > they're applied on every deploy. Secrets (Part B) persist on the Worker
 > across deploys.
 
-### (Optional) One-off manual deploy — not on Windows
+### (Optional) One-off manual deploy
 
-On macOS/Linux/WSL you can also deploy straight from your machine:
+You can deploy straight from your machine:
 
 ```bash
 npm run deploy
 ```
 
-On Windows this fails with the symlink error — use GitHub auto-deploy instead,
-or run it inside **WSL** (`wsl --install`, then clone + deploy inside Ubuntu).
+> ⚠️ **Windows Users:** To run a manual deploy, ensure **Windows Developer Mode** is enabled (Go to **Windows Settings → System → For developers** and switch Developer Mode to **ON**) so that the build step can successfully create symlinks.
 
 ---
 
@@ -295,21 +290,10 @@ URL for you.
 
 ## Troubleshooting
 
-- **`EPERM: operation not permitted, symlink … @prisma/client`** — you ran
-  `npm run deploy` / `npm run preview` on **Windows**. OpenNext can't build on
-  Windows. Use **GitHub auto-deploy (Part C)**, or build inside **WSL**. Local
-  `npm run dev` is unaffected.
-- **Cloudflare build fails on `database_id`** — the placeholder is still in
-  `wrangler.jsonc`. Put your real D1 id there, commit, and push.
-- **Admin edits don't save in production** — check the `AUTH_SECRET` /
-  `ADMIN_USERNAME` / `ADMIN_PASSWORD` secrets are set, and that migrations ran
-  on the **remote** D1 (`npm run d1:migrate:remote`).
-- **Uploaded images 404** — the R2 bucket needs public access and
-  `R2_PUBLIC_URL` must match that public URL.
-- **Homepage shows default content, not your edits** — the Worker couldn't
-  reach D1 (binding/migration issue); it fell back to built-in content so the
-  site stays up. Fix the D1 binding/migrations and redeploy (push to GitHub).
-- **`WebAssembly.Module(): Wasm code generation disallowed`** — the Node Prisma
-  client leaked onto the Worker. The D1 path must use the workerd client
-  (`src/generated/prisma-workerd`); `src/lib/db.ts` does this by default.
+- **`EPERM: operation not permitted, symlink …`** — you ran `npm run deploy` or `npm run build:cf` on **Windows** without having Windows Developer Mode enabled. To fix, turn Developer Mode **ON** under **Windows Settings → System → For developers**.
+- **Cloudflare build fails on `database_id`** — the placeholder is still in `wrangler.jsonc`. Put your real D1 id there, commit, and push.
+- **Admin edits don't save in production** — check the `AUTH_SECRET` / `ADMIN_USERNAME` / `ADMIN_PASSWORD` secrets are set, and that migrations ran on the **remote** D1 (`npm run d1:migrate:remote`).
+- **Uploaded images 404** — the R2 bucket needs public access and `R2_PUBLIC_URL` must match that public URL.
+- **Homepage shows default content, not your edits** — the Worker couldn't reach D1 (binding/migration issue); it fell back to built-in content so the site stays up. Fix the D1 binding/migrations and redeploy (push to GitHub).
+- **`WebAssembly.Module(): Wasm code generation disallowed`** or **Worker size limits exceeded** — these are historically caused by Prisma's WASM engine. We migrated the database client to a direct, lightweight SQL query interface (`src/lib/db.ts`), which completely bypasses Prisma at runtime on Cloudflare, keeping the build size down to ~1.5 MB gzipped and avoiding WASM compilation errors.
 - **Live logs:** `npx wrangler tail`.
