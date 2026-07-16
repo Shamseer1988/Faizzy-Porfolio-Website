@@ -18,6 +18,7 @@ export default function CardFx() {
     };
 
     const onMove = (e: PointerEvent) => {
+      if (window.location.pathname.startsWith("/admin")) return;
       const card = (e.target as Element | null)?.closest?.(".card") as HTMLElement | null;
       if (last && last !== card) clear(last);
       last = card;

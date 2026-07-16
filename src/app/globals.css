@@ -3744,3 +3744,27 @@ main section:nth-of-type(even)::before {
   border: 1px solid var(--stroke-2);
   object-fit: cover;
 }
+
+/* ============ DISABLE HOVER ANIMATIONS IN ADMIN AREA ============ */
+.admin-shell .card {
+  transform: none !important;
+  transition: none !important;
+}
+.admin-shell .card:hover {
+  transform: none !important;
+  border-color: var(--stroke) !important;
+  box-shadow: var(--shadow) !important;
+}
+.admin-shell .card::after {
+  content: none !important;
+}
+.admin-shell .card:hover .ic {
+  transform: none !important;
+}
+.admin-shell .card:hover h3 {
+  background: none !important;
+  -webkit-background-clip: initial !important;
+  background-clip: initial !important;
+  color: var(--text) !important;
+}
+
