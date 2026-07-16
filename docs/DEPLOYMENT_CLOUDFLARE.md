@@ -7,8 +7,12 @@ adapter for Next.js), with:
 - **Cloudflare R2** — object storage for uploaded images / videos
 - **faizzyworld.com** — your domain, already on Cloudflare
 
-Everything below is a one-time setup; after that you deploy with a single
-`npm run deploy`.
+> **Windows users — read this first.** Building the Worker locally on Windows
+> fails with `EPERM: operation not permitted, symlink` (OpenNext isn't
+> Windows-compatible). **Don't deploy from your Windows laptop.** Instead use
+> **[Part C — GitHub → Cloudflare auto-deploy](#part-c--deploy-from-github-auto-deploy-recommended)**,
+> which builds on Cloudflare's Linux servers on every push. Local *development*
+> (`npm run dev`) works fine on Windows — only the production *build* doesn't.
 
 ---
 
@@ -16,49 +20,52 @@ Everything below is a one-time setup; after that you deploy with a single
 
 | Piece            | Local development                         | Production (Cloudflare)             |
 | ---------------- | ----------------------------------------- | ----------------------------------- |
-| Database         | SQLite file `prisma/dev.db`               | D1 binding `DB`                     |
+| Database         | SQLite file **or** local D1 emulator      | D1 binding `DB`                     |
 | Prisma client    | `src/generated/prisma` (Node)             | `src/generated/prisma-workerd`      |
-| Media storage    | local R2 emulator (via `npm run preview`) | R2 binding `MEDIA`                  |
-| Admin auth guard | admin layout (`isAuthenticated()`)        | same (no Node middleware)           |
+| Media storage    | local R2 emulator                         | R2 binding `MEDIA`                  |
+| Deploy           | — (don't build on Windows)                | Cloudflare builds from GitHub       |
 
-`src/lib/db.ts` picks the right database automatically: a `file:` `DATABASE_URL`
-uses the local SQLite file; otherwise it uses the D1 binding. If neither is
-present the site still renders using the built-in `defaultContent`.
+`src/lib/db.ts` picks the database automatically: a `file:` `DATABASE_URL`
+uses a local SQLite file; otherwise it uses the D1 binding. If neither is
+reachable the site still renders using the built-in `defaultContent`
+(**graceful fallback** — the site never goes down).
 
 ---
 
 ## Prerequisites
 
 - Node.js 20+
+- The repo cloned locally (e.g. `D:\Dev Projects\Personal Projects\Faizzy-Porfolio-Website`)
 - A Cloudflare account with **faizzyworld.com** already added
-- Wrangler (bundled — used through `npx`)
+- A GitHub account connected to that repo
+- Wrangler is bundled — use it through `npx`
 
-Log in once:
+Log in to Cloudflare once (opens a browser):
 
 ```bash
 npx wrangler login
 ```
 
----
-
-## 1. Install dependencies
+Install dependencies:
 
 ```bash
 npm install
 ```
 
-`postinstall` runs `prisma generate`, which creates both Prisma clients
-(Node + workerd) under `src/generated/` (git-ignored).
+`postinstall` runs `prisma generate`, creating both Prisma clients under
+`src/generated/` (git-ignored — regenerated automatically everywhere).
 
 ---
 
-## 2. Create the D1 database
+## Part A — Create D1 and R2 (fresh)
+
+### A1. Create the D1 database
 
 ```bash
 npx wrangler d1 create faizzyworld-db
 ```
 
-Copy the `database_id` it prints and paste it into **`wrangler.jsonc`**,
+Copy the `database_id` it prints. Open **`wrangler.jsonc`** and paste it in,
 replacing `REPLACE_WITH_YOUR_D1_DATABASE_ID`:
 
 ```jsonc
@@ -72,34 +79,36 @@ replacing `REPLACE_WITH_YOUR_D1_DATABASE_ID`:
 ]
 ```
 
-Create the tables on the remote database, then load the starter content:
+> ⚠️ **This must be committed to GitHub** — Cloudflare's auto-build reads
+> `wrangler.jsonc` from your repo. If the id stays as the placeholder, the
+> deploy will fail. Commit + push after editing (see step A4).
+
+Create the tables and load the starter content on the **remote** database:
 
 ```bash
-npm run d1:migrate:remote     # applies migrations/0001_init.sql to D1
+npm run d1:migrate:remote     # applies migrations/0001_init.sql
 npm run d1:seed:remote        # loads prisma/seed-d1.sql (default content)
 ```
 
-> The schema lives in `prisma/schema.prisma`. `migrations/0001_init.sql`
-> was generated from it with `npm run db:migrations`. `prisma/seed-d1.sql`
-> is the default content as SQL.
+These are plain API calls — they work fine on Windows (no build involved).
 
----
-
-## 3. Create the R2 bucket (media storage)
+### A2. Create the R2 bucket
 
 ```bash
 npx wrangler r2 bucket create faizzyworld-media
 ```
 
-Give the bucket a **public URL** so uploaded images/videos are viewable.
-In the Cloudflare dashboard → **R2 → faizzyworld-media → Settings → Public
-access**, either:
+### A3. Give R2 a public URL
 
-- **Custom domain (recommended):** connect `media.faizzyworld.com`, or
+Uploaded images/videos need a public URL to be viewable. In the Cloudflare
+dashboard → **R2 → faizzyworld-media → Settings → Public access**, choose one:
+
+- **Custom domain (recommended):** connect `media.faizzyworld.com`
+  (Cloudflare adds the DNS record for you), **or**
 - **r2.dev subdomain:** enable the managed `https://<hash>.r2.dev` URL.
 
-Then set that URL in **`wrangler.jsonc`** (already pre-filled for a custom
-domain — adjust if you used r2.dev):
+Put that URL in **`wrangler.jsonc`** → `vars` (pre-filled for the custom
+domain — change if you used r2.dev):
 
 ```jsonc
 "vars": {
@@ -109,134 +118,198 @@ domain — adjust if you used r2.dev):
 }
 ```
 
-`R2_PUBLIC_URL` is the base an upload's URL is built from; `R2_PUBLIC_HOSTNAME`
-lets `next/image` optimise those images.
+- `R2_PUBLIC_URL` — the base an upload's URL is built from
+- `R2_PUBLIC_HOSTNAME` — same host without the scheme (lets `next/image` optimise it)
 
----
-
-## 4. Set secrets
-
-Never commit these — set them as Worker secrets:
+### A4. Commit the config
 
 ```bash
-# strong random value: openssl rand -base64 32
-npx wrangler secret put AUTH_SECRET
-npx wrangler secret put ADMIN_USERNAME
-npx wrangler secret put ADMIN_PASSWORD
+git add wrangler.jsonc
+git commit -m "Configure D1 database id and R2 public URL"
+git push
 ```
-
-`ADMIN_USERNAME` / `ADMIN_PASSWORD` are the credentials for `/admin/login`.
 
 ---
 
-## 5. Deploy
+## Part B — Set secrets
+
+The admin login and session signing use secrets (never commit these):
+
+```bash
+npx wrangler secret put AUTH_SECRET        # a long random string: openssl rand -base64 32
+npx wrangler secret put ADMIN_USERNAME     # your admin username
+npx wrangler secret put ADMIN_PASSWORD     # your admin password
+```
+
+If wrangler says *"no Worker found — create one? (y/N)"*, answer **Y** — it
+creates the `faizzyworld` Worker so the secrets have somewhere to live. The
+first real code deploy (Part C) then fills that Worker with the site.
+
+> You can also set these later in the dashboard: **Workers → faizzyworld →
+> Settings → Variables and Secrets → Add**.
+
+---
+
+## Part C — Deploy from GitHub (auto-deploy, recommended)
+
+This builds on Cloudflare's Linux servers, so the Windows symlink error can't
+happen, and it **redeploys automatically on every push** to your branch.
+
+1. Cloudflare dashboard → **Workers & Pages → faizzyworld → Settings →
+   Build → Connect** (or **Workers & Pages → Create → Import a repository**).
+2. Authorise GitHub and pick your repo (`Shamseer1988/faizzy-porfolio-website`)
+   and the **`master`** branch.
+3. Set the build configuration:
+   - **Build command:** `npm run build:cf`
+   - **Deploy command:** `npx wrangler deploy`
+   - **Root directory:** `/` (leave default)
+4. Save. Cloudflare runs `npm install` → builds the Worker with OpenNext →
+   deploys it. Watch the build log; when it finishes, open the
+   `https://faizzyworld.<your-subdomain>.workers.dev` URL it prints.
+
+From now on, **every `git push` to `master` triggers a fresh build + deploy**
+automatically. No local build needed, ever.
+
+> Bindings (D1 `DB`, R2 `MEDIA`) and `vars` come from `wrangler.jsonc`, so
+> they're applied on every deploy. Secrets (Part B) persist on the Worker
+> across deploys.
+
+### (Optional) One-off manual deploy — not on Windows
+
+On macOS/Linux/WSL you can also deploy straight from your machine:
 
 ```bash
 npm run deploy
 ```
 
-This regenerates the Prisma clients, builds the Worker with OpenNext, and
-deploys it. Wrangler prints the `*.workers.dev` URL — open it to confirm the
-site works.
+On Windows this fails with the symlink error — use GitHub auto-deploy instead,
+or run it inside **WSL** (`wsl --install`, then clone + deploy inside Ubuntu).
 
 ---
 
-## 6. Point faizzyworld.com at the Worker
+## Part D — Point faizzyworld.com at the Worker
 
-In the Cloudflare dashboard → **Workers & Pages → faizzyworld → Settings →
-Domains & Routes → Add → Custom Domain**, add:
+Cloudflare dashboard → **Workers & Pages → faizzyworld → Settings → Domains &
+Routes → Add → Custom Domain**:
 
 - `faizzyworld.com`
-- `www.faizzyworld.com` (optional; or redirect www → apex)
+- optionally `www.faizzyworld.com`
 
-Cloudflare provisions the TLS certificate automatically. Within a minute or
-two, https://faizzyworld.com serves the Worker.
-
-You can also do this from the CLI by adding a `routes` block to
-`wrangler.jsonc`, but the dashboard Custom Domain flow is simplest for an
-apex domain already on Cloudflare.
+Cloudflare provisions TLS automatically. Within a minute or two,
+**https://faizzyworld.com** serves the site.
 
 ---
 
-## Day-to-day: editing content
+## Part E — Local development & testing
 
-Log in at **https://faizzyworld.com/admin/login** with your admin
-credentials. Everything on the site (profile, skills, projects, timeline,
-family, gallery, videos, messages) is editable there, and changes go live
-immediately.
+You do **not** need Cloudflare to work on the site. Pick the mode you want:
 
-**Uploading media:** on the Gallery, Videos and Timeline forms, click
-**⬆ Upload** to send an image/video straight to R2 — the public URL is
-filled in and saved for you. You can also paste an existing URL by hand.
+### Mode 1 — Quick UI work (local SQLite) — simplest
+
+```bash
+# .env → DATABASE_URL="file:./prisma/dev.db"
+npm run db:setup      # creates + seeds prisma/dev.db (first time only)
+npm run dev           # http://localhost:3000
+```
+
+Everything works except R2 uploads (those need the Cloudflare runtime). Great
+for design/content changes.
+
+### Mode 2 — Full local: D1 **and** R2, emulated — recommended for testing
+
+This runs the real Cloudflare bindings locally through the OpenNext dev shim,
+so the admin panel, database **and** R2 uploads all work — no cloud account
+touched, fully offline.
+
+```bash
+# 1. In .env, leave DATABASE_URL EMPTY:
+#    DATABASE_URL=""
+# 2. Create + seed the local D1 emulator (first time only):
+npm run d1:setup:local
+# 3. Run it:
+npm run dev           # http://localhost:3000
+```
+
+Now `/admin` edits save to the local D1, and **⬆ Upload** stores files in the
+local R2 emulator (under `.wrangler/`). Uploaded files live locally, so their
+preview only renders if `R2_PUBLIC_URL` points at a reachable bucket — for
+viewing real uploads, use Mode 3 or just check them on the deployed site.
+
+If the local D1 isn't set up, the site falls back to the built-in content
+(read-only) — it never crashes.
+
+### Mode 3 — Local against the **real** cloud D1 + R2 (remote bindings)
+
+Use this when you want local testing to hit your actual Cloudflare D1 database
+and R2 bucket (so uploads land in the real bucket and are viewable). Requires
+`npx wrangler login` and the resources from Part A.
+
+Add `"remote": true` to the D1 and R2 bindings in **`wrangler.jsonc`** (or keep
+a copy in a git-ignored `wrangler.dev.jsonc`):
+
+```jsonc
+"d1_databases": [{ "binding": "DB", "database_name": "faizzyworld-db", "database_id": "…", "remote": true }],
+"r2_buckets":  [{ "binding": "MEDIA", "bucket_name": "faizzyworld-media", "remote": true }]
+```
+
+Then with `DATABASE_URL=""` in `.env`, run `npm run dev`. Bindings now proxy to
+the real cloud resources. **Remove `"remote": true` before committing** (or
+production would also try remote-proxy) — production uses the direct bindings.
+
+### Switching modes
+
+The only toggle is `DATABASE_URL` in `.env`:
+
+| `DATABASE_URL`             | Database used                                   |
+| ------------------------- | ----------------------------------------------- |
+| `file:./prisma/dev.db`    | local SQLite file (Mode 1)                      |
+| `` (empty)                | the D1 binding — local emulator or remote (2/3) |
 
 ---
 
-## Local development
+## Editing content (after deploy)
 
-Two ways to run locally:
-
-### a) Fast UI work — `next dev` on SQLite
-
-```bash
-npm run db:setup     # creates + seeds prisma/dev.db (first time only)
-npm run dev          # http://localhost:3000
-```
-
-Uses the local SQLite file. The admin panel and contact form work; uploads
-show a "not available" message (R2 needs the Worker runtime — see below).
-
-### b) Production-like — the real Worker on local D1 + R2
-
-```bash
-# one-time: create the local D1 tables + data
-npx wrangler d1 migrations apply faizzyworld-db --local
-npx wrangler d1 execute faizzyworld-db --local --file=./prisma/seed-d1.sql
-
-npm run preview      # builds the Worker and runs it in workerd (miniflare)
-```
-
-This mirrors production exactly, including D1 and R2 (uploads work against a
-local R2 emulator). To make `preview` use local D1 instead of the SQLite
-file, create a **`.dev.vars`** file (git-ignored) with:
-
-```
-DATABASE_URL=""
-```
+Log in at **https://faizzyworld.com/admin/login** with your admin credentials.
+Everything (profile, skills, projects, timeline, family, gallery, videos,
+messages) is editable and goes live immediately. On the Gallery, Videos and
+Timeline forms, **⬆ Upload** sends an image/video straight to R2 and saves its
+URL for you.
 
 ---
 
 ## Changing the database schema
 
 1. Edit `prisma/schema.prisma`.
-2. Regenerate the init migration (or add a new numbered file under
-   `migrations/`):
+2. Regenerate the migration SQL: `npm run db:migrations`.
+3. Apply it:
    ```bash
-   npm run db:migrations
+   npm run d1:migrate:local     # local emulator
+   npm run d1:migrate:remote    # production D1
    ```
-3. Apply locally and remotely:
-   ```bash
-   npx wrangler d1 migrations apply faizzyworld-db --local
-   npm run d1:migrate:remote
-   ```
-4. `npm run db:push` updates your local SQLite file for `next dev`.
+4. For the SQLite file mode, `npm run db:push` updates `prisma/dev.db`.
 
-> SQLite has no array type, so `string[]` fields (profile roles, project
-> tools) are stored as JSON strings and parsed in `src/lib/serialize.ts`.
+> SQLite has no array type, so `string[]` fields (profile roles, project tools)
+> are stored as JSON strings and parsed in `src/lib/serialize.ts`.
 
 ---
 
 ## Troubleshooting
 
-- **`WebAssembly.Module(): Wasm code generation disallowed`** — you're using
-  the Node Prisma client on the Worker. Make sure the D1 path uses
-  `src/generated/prisma-workerd` (it does by default in `src/lib/db.ts`).
-- **Admin edits don't save on the Worker** — check `AUTH_SECRET`,
-  `ADMIN_USERNAME`, `ADMIN_PASSWORD` secrets are set, and that D1 migrations
-  ran on the **remote** database (`npm run d1:migrate:remote`).
+- **`EPERM: operation not permitted, symlink … @prisma/client`** — you ran
+  `npm run deploy` / `npm run preview` on **Windows**. OpenNext can't build on
+  Windows. Use **GitHub auto-deploy (Part C)**, or build inside **WSL**. Local
+  `npm run dev` is unaffected.
+- **Cloudflare build fails on `database_id`** — the placeholder is still in
+  `wrangler.jsonc`. Put your real D1 id there, commit, and push.
+- **Admin edits don't save in production** — check the `AUTH_SECRET` /
+  `ADMIN_USERNAME` / `ADMIN_PASSWORD` secrets are set, and that migrations ran
+  on the **remote** D1 (`npm run d1:migrate:remote`).
 - **Uploaded images 404** — the R2 bucket needs public access and
   `R2_PUBLIC_URL` must match that public URL.
-- **Homepage shows default content instead of your edits** — the Worker
-  couldn't reach D1 (binding/migration issue); it falls back to
-  `defaultContent` so the site never goes down. Fix the D1 binding and
-  redeploy.
-- **View live logs:** `npx wrangler tail`.
+- **Homepage shows default content, not your edits** — the Worker couldn't
+  reach D1 (binding/migration issue); it fell back to built-in content so the
+  site stays up. Fix the D1 binding/migrations and redeploy (push to GitHub).
+- **`WebAssembly.Module(): Wasm code generation disallowed`** — the Node Prisma
+  client leaked onto the Worker. The D1 path must use the workerd client
+  (`src/generated/prisma-workerd`); `src/lib/db.ts` does this by default.
+- **Live logs:** `npx wrangler tail`.
