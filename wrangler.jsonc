@@ -1,44 +1,42 @@
 {
-  "$schema": "node_modules/wrangler/config-schema.json",
-  "name": "faizzyworld",
-  "main": ".open-next/worker.js",
-  "compatibility_date": "2025-06-01",
-  "compatibility_flags": ["nodejs_compat"],
+	"$schema": "node_modules/wrangler/config-schema.json",
+	"name": "faizzyworld",
+	"main": ".open-next/worker.js",
+	"compatibility_date": "2025-06-01",
+	"compatibility_flags": [
+		"nodejs_compat"
+	],
+	// Serves the static assets emitted by the Next.js build.
+	"assets": {
+		"binding": "ASSETS",
+		"directory": ".open-next/assets"
+	},
+	// Cloudflare D1 (SQLite) — replace database_id with the id printed by
+	// `wrangler d1 create faizzyworld-db` (see docs/DEPLOYMENT_CLOUDFLARE.md).
+	"d1_databases": [
 
-  // Serves the static assets emitted by the Next.js build.
-  "assets": {
-    "binding": "ASSETS",
-    "directory": ".open-next/assets"
-  },
-
-  // Cloudflare D1 (SQLite) — replace database_id with the id printed by
-  // `wrangler d1 create faizzyworld-db` (see docs/DEPLOYMENT_CLOUDFLARE.md).
-  "d1_databases": [
-    {
-      "binding": "DB",
-      "database_name": "faizzyworld-db",
-      "database_id": "REPLACE_WITH_YOUR_D1_DATABASE_ID",
-      "migrations_dir": "migrations"
-    }
-  ],
-
-  // Cloudflare R2 bucket for uploaded images / videos.
-  "r2_buckets": [
-    {
-      "binding": "MEDIA",
-      "bucket_name": "faizzyworld-media"
-    }
-  ],
-
-  // Non-secret runtime vars. Secrets (AUTH_SECRET, ADMIN_PASSWORD) are set
-  // with `wrangler secret put` — never commit them here.
-  "vars": {
-    "NEXT_PUBLIC_SITE_URL": "https://faizzyworld.com",
-    "R2_PUBLIC_URL": "https://media.faizzyworld.com",
-    "R2_PUBLIC_HOSTNAME": "media.faizzyworld.com"
-  },
-
-  "observability": {
-    "enabled": true
-  }
+		{
+			"binding": "faizzyworld_db",
+			"database_name": "faizzyworld-db",
+			"database_id": "f65d8007-4d12-4e94-84e4-1354137b68c8",
+			"remote": true
+		}
+	],
+	// Cloudflare R2 bucket for uploaded images / videos.
+	"r2_buckets": [
+		{
+			"binding": "MEDIA",
+			"bucket_name": "faizzyworld-media"
+		}
+	],
+	// Non-secret runtime vars. Secrets (AUTH_SECRET, ADMIN_PASSWORD) are set
+	// with `wrangler secret put` — never commit them here.
+	"vars": {
+		"NEXT_PUBLIC_SITE_URL": "https://faizzyworld.com",
+		"R2_PUBLIC_URL": "https://media.faizzyworld.com",
+		"R2_PUBLIC_HOSTNAME": "media.faizzyworld.com"
+	},
+	"observability": {
+		"enabled": true
+	}
 }
