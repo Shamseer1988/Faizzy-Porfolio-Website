@@ -76,10 +76,12 @@ model FamilyMember {
 }
 
 model GalleryItem {
-  id      Int    @id @default(autoincrement())
-  src     String
-  caption String
-  order   Int    @default(0)
+  id       Int    @id @default(autoincrement())
+  src      String
+  caption  String
+  category String @default("life")
+  year     String @default("2024")
+  order    Int    @default(0)
 }
 
 model Message {

@@ -1,0 +1,3 @@
+-- AlterTable
+ALTER TABLE "GalleryItem" ADD COLUMN "category" TEXT NOT NULL DEFAULT 'life';
+ALTER TABLE "GalleryItem" ADD COLUMN "year" TEXT NOT NULL DEFAULT '2024';

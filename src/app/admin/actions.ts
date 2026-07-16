@@ -184,6 +184,8 @@ export async function saveGalleryAction(formData: FormData) {
   const data = {
     src: str(formData, "src"),
     caption: str(formData, "caption"),
+    category: str(formData, "category", "life"),
+    year: str(formData, "year", "2024"),
     order: num(formData, "order"),
   };
   if (!data.src) return;

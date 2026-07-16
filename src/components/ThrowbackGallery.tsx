@@ -26,11 +26,20 @@ function enrich(items: GalleryItem[]): GalleryItem[] {
     5: { year: "2021", category: "adventures" },
     6: { year: "2020", category: "adventures" },
   };
-  return items.map((it) => ({
-    ...it,
-    year: it.year ?? meta[it.id]?.year ?? "2024",
-    category: it.category ?? meta[it.id]?.category ?? "life",
-  }));
+  return items.map((it) => {
+    const defaultYear = "2024";
+    const defaultCat = "life";
+    
+    // For legacy items, if the db value matches migration default, fallback to static metadata
+    const year = it.year && it.year !== defaultYear ? it.year : (meta[it.id]?.year ?? it.year ?? defaultYear);
+    const category = it.category && it.category !== defaultCat ? it.category : (meta[it.id]?.category ?? it.category ?? defaultCat);
+
+    return {
+      ...it,
+      year,
+      category,
+    };
+  });
 }
 
 const CATEGORIES = ["all", "family", "adventures", "life"];

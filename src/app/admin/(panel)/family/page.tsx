@@ -84,8 +84,25 @@ export default async function AdminFamily() {
               name="caption"
               defaultValue={g?.caption ?? ""}
               placeholder="Caption…"
-              style={{ ...inputStyle, flex: "1 1 220px" }}
+              style={{ ...inputStyle, flex: "1 1 200px" }}
               aria-label="Caption"
+            />
+            <select
+              name="category"
+              defaultValue={(g as any)?.category ?? "life"}
+              style={{ ...inputStyle, width: 125 }}
+              aria-label="Category"
+            >
+              <option value="family">Family</option>
+              <option value="adventures">Adventures</option>
+              <option value="life">Life</option>
+            </select>
+            <input
+              name="year"
+              defaultValue={(g as any)?.year ?? "2024"}
+              placeholder="Year"
+              style={{ ...inputStyle, width: 85 }}
+              aria-label="Year"
             />
             <input name="order" type="number" defaultValue={g?.order ?? gallery.length + 1} style={{ ...inputStyle, width: 70 }} aria-label="Order" />
             <button className="btn btn-primary btn-sm" type="submit">
