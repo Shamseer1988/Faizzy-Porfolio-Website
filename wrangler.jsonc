@@ -6,31 +6,26 @@
 	"compatibility_flags": [
 		"nodejs_compat"
 	],
-	// Serves the static assets emitted by the Next.js build.
 	"assets": {
 		"binding": "ASSETS",
 		"directory": ".open-next/assets"
 	},
-	// Cloudflare D1 (SQLite) — replace database_id with the id printed by
-	// `wrangler d1 create faizzyworld-db` (see docs/DEPLOYMENT_CLOUDFLARE.md).
 	"d1_databases": [
-
 		{
-			"binding": "faizzyworld_db",
+			"binding": "DB",
 			"database_name": "faizzyworld-db",
 			"database_id": "f65d8007-4d12-4e94-84e4-1354137b68c8",
+			"migrations_dir": "migrations",
 			"remote": true
 		}
 	],
-	// Cloudflare R2 bucket for uploaded images / videos.
 	"r2_buckets": [
 		{
 			"binding": "MEDIA",
-			"bucket_name": "faizzyworld-media"
+			"bucket_name": "faizzyworld-media",
+			"remote": true
 		}
 	],
-	// Non-secret runtime vars. Secrets (AUTH_SECRET, ADMIN_PASSWORD) are set
-	// with `wrangler secret put` — never commit them here.
 	"vars": {
 		"NEXT_PUBLIC_SITE_URL": "https://faizzyworld.com",
 		"R2_PUBLIC_URL": "https://media.faizzyworld.com",
