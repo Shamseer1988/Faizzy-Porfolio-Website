@@ -9,6 +9,7 @@ const nextConfig: NextConfig = {
       { protocol: "https", hostname: "img.youtube.com" },
       { protocol: "https", hostname: "i.ytimg.com" },
       { protocol: "https", hostname: "**.r2.dev" },
+      { protocol: "https", hostname: "media.faizzyworld.com" },
       ...(process.env.R2_PUBLIC_HOSTNAME
         ? [{ protocol: "https" as const, hostname: process.env.R2_PUBLIC_HOSTNAME }]
         : []),
