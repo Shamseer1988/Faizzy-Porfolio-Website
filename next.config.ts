@@ -35,5 +35,13 @@ const nextConfig: NextConfig = {
 export default nextConfig;
 
 // Enables Cloudflare bindings (D1, R2, …) during `next dev` via OpenNext.
-// No-ops outside local development.
-void initOpenNextCloudflareForDev();
+// initOpenNextCloudflareForDev()'s own internal guard only dedupes between
+// Next dev's two worker processes — it does NOT distinguish `next dev` from
+// `next build`. Without this NODE_ENV check, a production build can trip
+// that heuristic and try to open a live connection to any `"remote": true`
+// binding in wrangler.jsonc, which hangs/fails the build (or, worse, can
+// wire the bundled Worker to a dev-only proxy instead of plain production
+// bindings). Only ever run it for the actual dev server.
+if (process.env.NODE_ENV === "development") {
+  void initOpenNextCloudflareForDev();
+}
